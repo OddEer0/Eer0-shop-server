@@ -17,7 +17,7 @@ const start = async () => {
 	SwaggerModule.setup('/api/docs', app, document)
 
 	app.use(cookieParser())
-	app.enableCors()
+	app.enableCors({ credentials: true, origin: process.env.CLIENT_URL })
 
 	await app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
 }

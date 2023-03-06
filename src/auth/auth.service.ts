@@ -6,6 +6,7 @@ import * as uuid from 'uuid'
 import { TokenService } from 'src/token/token.service'
 import { AuthLoginDto } from './dto/authLogin.dto'
 import { EMAIL_OR_PASSWORD_INCORRECT, USER_EXISTS } from './auth.const'
+import { PureUserDto } from '../common/dto/pureUser.dto'
 
 @Injectable()
 export class AuthService {
@@ -20,11 +21,15 @@ export class AuthService {
 		const hashPassword = await bcrypt.hash(userDto.password, 5)
 		const link: string = uuid.v4()
 
-		const user = await this.usersService.createUser({ ...userDto, password: hashPassword, activationLink: link })
+		await this.usersService.createUser({ ...userDto, password: hashPassword, activationLink: link })
+		const user = await this.usersService.getUserByNickname(userDto.nickname)
+
 		const tokens = this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ userId: user.id, refreshToken: tokens.refreshToken })
 
-		return { tokens, user }
+		const pureUser = new PureUserDto(user)
+
+		return { tokens, user: pureUser }
 	}
 
 	async login(dto: AuthLoginDto) {
@@ -39,7 +44,9 @@ export class AuthService {
 
 		const tokens = this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ refreshToken: tokens.refreshToken, userId: user.id })
-		return { tokens, user }
+
+		const pureUser = new PureUserDto(user)
+		return { tokens, user: pureUser }
 	}
 
 	async logout(refreshToken: string) {
@@ -50,21 +57,24 @@ export class AuthService {
 	}
 
 	async refresh(refreshToken: string) {
+		console.log(refreshToken)
 		if (!refreshToken) {
-			throw new UnauthorizedException()
+			throw new UnauthorizedException('Не авторизован')
 		}
 
 		const userData = this.tokenService.validateRefreshToken(refreshToken)
 		const tokenFromDb = this.tokenService.findRefreshToken(refreshToken)
 
 		if (!userData || !tokenFromDb) {
-			throw new UnauthorizedException()
+			throw new UnauthorizedException('Не авторизован')
 		}
 
 		const user = await this.usersService.getUserByNickname(userData.nickname)
 		const tokens = await this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ refreshToken: tokens.refreshToken, userId: user.id })
 
-		return { tokens, user }
+		const pureUser = new PureUserDto(user)
+
+		return { tokens, user: pureUser }
 	}
 }

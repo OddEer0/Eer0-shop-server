@@ -10,7 +10,7 @@ interface TokenCreationAttribute {
 @Table({ tableName: 'tokens' })
 export class Token extends Model<Token, TokenCreationAttribute> {
 	@Column({
-		type: DataType.STRING,
+		type: DataType.STRING(500),
 		unique: true,
 		defaultValue: UUIDV4,
 		primaryKey: true
@@ -18,7 +18,7 @@ export class Token extends Model<Token, TokenCreationAttribute> {
 	id: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		unique: true,
 		allowNull: true
 	})
@@ -26,7 +26,7 @@ export class Token extends Model<Token, TokenCreationAttribute> {
 
 	@ForeignKey(() => User)
 	@Column({
-		type: DataType.STRING,
+		type: DataType.STRING(500),
 		allowNull: false
 	})
 	userId: string

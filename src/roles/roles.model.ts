@@ -11,7 +11,7 @@ interface RoleCreationAttribute {
 @Table({ tableName: 'roles' })
 export class Role extends Model<Role, RoleCreationAttribute> {
 	@Column({
-		type: DataType.STRING,
+		type: DataType.STRING(500),
 		unique: true,
 		defaultValue: UUIDV4,
 		primaryKey: true
@@ -19,14 +19,14 @@ export class Role extends Model<Role, RoleCreationAttribute> {
 	id: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		unique: true,
 		allowNull: false
 	})
 	value: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		allowNull: false
 	})
 	description: string

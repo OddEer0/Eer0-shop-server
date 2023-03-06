@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt/dist'
 import { InjectModel } from '@nestjs/sequelize'
+import { IJwtPayload } from 'src/auth/types/jwtPayload.types'
 import { User } from 'src/users/users.model'
 import { SaveTokenDto } from './dto/saveToken.dto'
 import { Token } from './token.model'
@@ -10,9 +11,9 @@ export class TokenService {
 	constructor(@InjectModel(Token) private tokenModel: typeof Token, private jwtService: JwtService) {}
 
 	generateToken(user: User) {
-		const payload = { id: user.id, nickname: user.nickname, roles: user.roles }
+		const payload = { id: user.id, nickname: user.nickname, roles: user.roles.map(role => role.value) }
 		return {
-			accessToken: this.jwtService.sign(payload, { secret: process.env.ACCESS_SECRET_KEY, expiresIn: '15m' }),
+			accessToken: this.jwtService.sign(payload, { secret: process.env.ACCESS_SECRET_KEY, expiresIn: '1h' }),
 			refreshToken: this.jwtService.sign(payload, { secret: process.env.REFRESH_SECRET_KEY, expiresIn: '30d' })
 		}
 	}
@@ -44,6 +45,10 @@ export class TokenService {
 
 	validateRefreshToken(token: string) {
 		return this.jwtService.verify(token, { secret: process.env.REFRESH_SECRET_KEY })
+	}
+
+	parseAccessToken(token: string) {
+		return this.jwtService.decode(token) as IJwtPayload
 	}
 
 	validateAccessToken(token: string) {

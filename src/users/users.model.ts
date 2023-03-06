@@ -13,7 +13,7 @@ interface UserCreationAttribute {
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserCreationAttribute> {
 	@Column({
-		type: DataType.STRING,
+		type: DataType.STRING(500),
 		unique: true,
 		defaultValue: UUIDV4,
 		primaryKey: true
@@ -21,34 +21,40 @@ export class User extends Model<User, UserCreationAttribute> {
 	id: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		unique: true,
 		allowNull: false
 	})
 	email: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		unique: true,
 		allowNull: false
 	})
 	nickname: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
+		allowNull: true
+	})
+	avatar: string
+
+	@Column({
+		type: DataType.TEXT,
 		allowNull: false
 	})
 	password: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		allowNull: false,
 		defaultValue: 'Nameless'
 	})
 	firstName: string
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		allowNull: false,
 		defaultValue: ''
 	})
@@ -61,7 +67,7 @@ export class User extends Model<User, UserCreationAttribute> {
 	birthday: Date
 
 	@Column({
-		type: DataType.STRING
+		type: DataType.TEXT
 	})
 	activationLink: string
 
@@ -78,7 +84,7 @@ export class User extends Model<User, UserCreationAttribute> {
 	isBanned: boolean
 
 	@Column({
-		type: DataType.STRING,
+		type: DataType.TEXT,
 		allowNull: true
 	})
 	banReason: string
