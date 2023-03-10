@@ -37,18 +37,6 @@ export class UsersService {
 		})
 	}
 
-	async getUserByAccessToken(accessToken: string) {
-		if (!accessToken) {
-			throw new UnauthorizedException()
-		}
-
-		const userData = await this.tokenService.parseAccessToken(accessToken)
-		const user = await this.getUserById(userData.id)
-		const pureUser = new PureUserDto(user)
-
-		return pureUser
-	}
-
 	async getUserById(id: string) {
 		const user = await this.userModel.findOne({
 			where: { id },

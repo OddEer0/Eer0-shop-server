@@ -29,7 +29,7 @@ export class AuthService {
 
 		const pureUser = new PureUserDto(user)
 
-		return { tokens, user: pureUser }
+		return pureUser
 	}
 
 	async login(dto: AuthLoginDto) {
@@ -46,7 +46,7 @@ export class AuthService {
 		await this.tokenService.saveToken({ refreshToken: tokens.refreshToken, userId: user.id })
 
 		const pureUser = new PureUserDto(user)
-		return { tokens, user: pureUser }
+		return pureUser
 	}
 
 	async logout(refreshToken: string) {
@@ -75,6 +75,6 @@ export class AuthService {
 
 		const pureUser = new PureUserDto(user)
 
-		return { tokens, user: pureUser }
+		return pureUser
 	}
 }

@@ -13,13 +13,6 @@ export class UsersController {
 		return this.usersService.getAll()
 	}
 
-	@UseGuards(JwtAuthGuard)
-	@Get('/profile')
-	getProfile(@Req() req: Request) {
-		const { accessToken } = req.cookies
-		return this.usersService.getUserByAccessToken(accessToken)
-	}
-
 	@Delete(':id')
 	deleteUser(@Param('id') id: string) {
 		return this.usersService.deleteUser(id)
