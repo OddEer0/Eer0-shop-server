@@ -15,7 +15,7 @@ export class AuthController {
 			const userData = await this.authService.registration(userDto)
 			res.cookie('refreshToken', userData.tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 			res.cookie('accessToken', userData.tokens.accessToken, { maxAge: 7 * 24 * 60 * 60 * 1000 })
-			return userData
+			return userData.user
 		} catch (error) {
 			console.log(error)
 		}
@@ -27,7 +27,7 @@ export class AuthController {
 			const userData = await this.authService.login(dto)
 			res.cookie('refreshToken', userData.tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 			res.cookie('accessToken', userData.tokens.accessToken, { maxAge: 7 * 24 * 60 * 60 * 1000 })
-			return userData
+			return userData.user
 		} catch (error) {
 			console.log(error)
 		}
@@ -39,6 +39,6 @@ export class AuthController {
 		const userData = await this.authService.refresh(refreshToken)
 		res.cookie('refreshToken', userData.tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
 		res.cookie('accessToken', userData.tokens.accessToken, { maxAge: 7 * 24 * 60 * 60 * 1000 })
-		return userData
+		return userData.user
 	}
 }
