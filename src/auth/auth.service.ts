@@ -57,7 +57,6 @@ export class AuthService {
 	}
 
 	async refresh(refreshToken: string) {
-		console.log(refreshToken)
 		if (!refreshToken) {
 			throw new UnauthorizedException('Не авторизован')
 		}
