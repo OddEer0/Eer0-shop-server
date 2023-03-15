@@ -1,46 +1,56 @@
 import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt/dist'
-import { InjectModel } from '@nestjs/sequelize'
+import { User } from '@prisma/client'
 import { IJwtPayload } from 'src/auth/types/jwtPayload.types'
-import { User } from 'src/users/users.model'
+import { PrismaService } from 'src/prisma/prisma.service'
 import { SaveTokenDto } from './dto/saveToken.dto'
-import { Token } from './token.model'
 
 @Injectable()
 export class TokenService {
-	constructor(@InjectModel(Token) private tokenModel: typeof Token, private jwtService: JwtService) {}
+	constructor(
+		private prismaService: PrismaService,
+		private jwtService: JwtService,
+		private configService: ConfigService
+	) {}
 
-	generateToken(user: User) {
-		const payload = { id: user.id, nickname: user.nickname, roles: user.roles.map(role => role.value) }
+	generateToken(user: any) {
+		const payload = { id: user.id, roles: user.roles.map(role => role.value) } // make dto
 		return {
-			accessToken: this.jwtService.sign(payload, { secret: process.env.ACCESS_SECRET_KEY, expiresIn: '1h' }),
-			refreshToken: this.jwtService.sign(payload, { secret: process.env.REFRESH_SECRET_KEY, expiresIn: '30d' })
+			accessToken: this.jwtService.sign(payload, {
+				secret: this.configService.get('ACCESS_SECRET_KEY'),
+				expiresIn: '1h'
+			}),
+			refreshToken: this.jwtService.sign(payload, {
+				secret: this.configService.get('REFRESH_SECRET_KEY'),
+				expiresIn: '30d'
+			})
 		}
 	}
 
 	async saveToken(dto: SaveTokenDto) {
-		const tokenData = await this.tokenModel.findByPk(dto.userId)
+		const tokenData = await this.prismaService.token.findUnique({ where: { userId: dto.userId } })
 		if (tokenData) {
-			tokenData.refreshToken = dto.refreshToken
-			return tokenData.save()
+			return await this.prismaService.token.update({
+				where: { userId: tokenData.userId },
+				data: { ...tokenData, refreshToken: dto.refreshToken }
+			})
 		}
 
-		const token = await this.tokenModel.create(dto)
+		const token = await this.prismaService.token.create({ data: dto })
 		return token
 	}
 
 	async deleteTokenByUserId(userId: string) {
-		await this.tokenModel.destroy({ where: { userId } })
+		await this.prismaService.token.delete({ where: { userId } })
 	}
 
 	async findRefreshToken(refreshToken) {
-		return await this.tokenModel.findOne({ where: { refreshToken } })
+		return await this.prismaService.token.findUnique({ where: { refreshToken } })
 	}
 
 	async nullRefreshToken(refreshToken: string) {
-		const tokenData = await this.findRefreshToken(refreshToken)
-		tokenData.refreshToken = null
-		return tokenData.save()
+		return this.prismaService.token.update({ where: { refreshToken }, data: { refreshToken: null } })
 	}
 
 	validateRefreshToken(token: string) {
