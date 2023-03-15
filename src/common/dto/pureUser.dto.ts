@@ -1,4 +1,4 @@
-import { Role } from 'src/roles/roles.model'
+import { Role } from '@prisma/client'
 
 export class PureUserDto {
 	id: string
