@@ -20,8 +20,10 @@ model User {
   isActivate     Boolean   @default(false)
   isBanned       Boolean   @default(false)
   banReason      String?
+  comments       Comment[]
   roles          Role[]
   token          Token?
+  cart           Cart?
 }
 
 model Role {
@@ -35,4 +37,70 @@ model Token {
   user         User    @relation(fields: [userId], references: [id])
   userId       String  @id
   refreshToken String? @unique
+}
+
+model Cart {
+  id String @id() @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model Device {
+  id String @id() @default(uuid())
+  name String @unique
+  description String
+  price Int
+  stock Int
+  stockPercent Int
+  count Int
+  images String[]
+  comment Comment[]
+  brand Brand?
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  infos Info[]
+}
+
+model Brand {
+  id String @id() @default(uuid())
+  name String @unique
+  device Device @relation(fields: [deviceId], references: [id])
+  deviceId String @unique
+}
+
+model Category {
+  id String @id() @default(uuid())
+  name String @unique
+  img String
+  title String
+  devices Device[]
+  filters Filter[]
+}
+
+model Info {
+  id String @id() @default(uuid())
+  devices Device[]
+  info String
+  value String
+}
+
+model Comment {
+  id String @id() @default(uuid())
+  device Device @relation(fields: [deviceId], references: [id])
+  deviceId String
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  description String
+  like Int
+  dislike Int
+}
+
+model Filter {
+  id String @id() @default(uuid())
+  name String
+  type String
+  maxValue Int?
+  minValue Int?
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId String
 }
