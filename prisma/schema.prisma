@@ -55,7 +55,8 @@ model Device {
   count Int
   images String[]
   comment Comment[]
-  brand Brand?
+  brand Brand @relation(fields: [brandId], references: [id])
+  brandId String  
   category Category @relation(fields: [categoryId], references: [id])
   categoryId String
   infos Info[]
@@ -64,8 +65,7 @@ model Device {
 model Brand {
   id String @id() @default(uuid())
   name String @unique
-  device Device @relation(fields: [deviceId], references: [id])
-  deviceId String @unique
+  device Device[]
 }
 
 model Category {
