@@ -23,6 +23,8 @@ export class DeviceService {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
+		await this.categoryService.addBrandToCategory(category.id, brand.id)
+
 		const connectOrCreate = []
 
 		for await (const info of dto.infos) {

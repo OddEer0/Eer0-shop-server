@@ -12,8 +12,26 @@ export class CategoryService {
 	}
 
 	async getCategoryById(id: string) {
-		const category = await this.prismaService.category.findUnique({ where: { id } })
+		const category = await this.prismaService.category.findUnique({
+			where: { id },
+			include: { brands: true, filters: true }
+		})
 		return category
+	}
+
+	async addBrandToCategory(categoryId: string, brandId: string) {
+		const candidate = this.prismaService.category.findFirst({
+			where: { id: categoryId, brands: { some: { id: brandId } } }
+		})
+
+		if (candidate) {
+			const category = await this.prismaService.category.update({
+				where: { id: categoryId },
+				data: { brands: { connect: { id: brandId } } }
+			})
+
+			return category
+		}
 	}
 
 	async getAllCategory() {
