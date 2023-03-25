@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Req } from '@nestjs/common'
 import { DeviceService } from './device.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Request } from 'express'
@@ -15,5 +15,10 @@ export class DeviceController {
 	@Get()
 	getAllDevice(@Req() req: Request) {
 		return this.deviceService.getFilteredAndSortDevice(req)
+	}
+
+	@Delete(':id')
+	deleteDevice(@Param('id') id: string) {
+		return this.deviceService.deleteDevice(id)
 	}
 }

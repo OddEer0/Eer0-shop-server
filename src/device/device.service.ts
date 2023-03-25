@@ -131,4 +131,9 @@ export class DeviceService {
 
 		return andArray
 	}
+
+	async deleteDevice(id: string) {
+		await this.prismaService.device.delete({ where: { id } })
+		return 'Девайс с ' + id + 'удалён'
+	}
 }
