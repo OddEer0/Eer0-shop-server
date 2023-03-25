@@ -13,8 +13,9 @@ export class UsersService {
 	) {}
 
 	async createUser(dto: CreateUserDto) {
-		const user = await this.prismaService.user.create({ data: dto })
 		const role = await this.rolesService.getRolesByValue('ADMIN')
+		const user = await this.prismaService.user.create({ data: { ...dto, roles: { connect: { id: role.id } } } })
+
 		return user
 	}
 

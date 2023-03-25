@@ -84,8 +84,11 @@ model Category {
 model Info {
   id String @id() @default(uuid())
   devices Device[]
-  info String
+  name String
+  title String
   value String
+  filter Filter @relation(fields: [filterId], references: [id])
+  filterId String
 }
 
 model Comment {
@@ -103,8 +106,10 @@ model Filter {
   id String @id() @default(uuid())
   name String
   type String
+  title String
   maxValue Int?
   minValue Int?
   category Category @relation(fields: [categoryId], references: [id])
   categoryId String
+  infos Info[]
 }
