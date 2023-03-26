@@ -60,7 +60,7 @@ export class DeviceService {
 		if (!this.validateFilterQuery(req.query)) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
-		const { limit, page, category, isonlycash, isstock, maxprice, minprice, ...otherQuery } = req.query
+		const { limit, page, category, isonlycash, isstock, maxprice, minprice, brand, ...otherQuery } = req.query
 
 		const isOnlyCash = isonlycash ? {} : { gt: 0 }
 		const isStock = isstock ? { gt: 0 } : {}
@@ -72,6 +72,8 @@ export class DeviceService {
 			priceFilter.lt = +maxprice
 		}
 
+		const orArray = this.brandQueryToOrArray(brand as string)
+
 		const andArray = this.queriesToAndArray(otherQuery)
 
 		const deviceCount = await this.prismaService.device.count({
@@ -80,7 +82,8 @@ export class DeviceService {
 				count: isOnlyCash,
 				stock: isStock,
 				price: priceFilter,
-				AND: andArray
+				AND: andArray,
+				OR: orArray
 			}
 		})
 
@@ -94,7 +97,8 @@ export class DeviceService {
 				count: isOnlyCash,
 				stock: isStock,
 				price: priceFilter,
-				AND: andArray
+				AND: andArray,
+				OR: orArray
 			},
 			include: { infos: true }
 		})
@@ -106,13 +110,13 @@ export class DeviceService {
 	}
 
 	private validateFilterQuery(query: any) {
-		if (!query.page && !query.limit && !query.category) {
+		if (!query.page || !query.limit || !query.category) {
 			return false
 		}
 		return true
 	}
 
-	private queryToOrArray(name: string, value: string) {
+	private queryToOrInfoArray(name: string, value: string) {
 		const arr = []
 		value.split(',').forEach(val => {
 			arr.push({ name, value: val })
@@ -120,12 +124,25 @@ export class DeviceService {
 		return arr
 	}
 
+	private brandQueryToOrArray(value: string) {
+		if (!value) return
+		const arr = []
+		value.split(',').forEach(val => {
+			arr.push({ brand: { name: val } })
+		})
+
+		if (arr.length) {
+			return arr
+		}
+		return
+	}
+
 	private queriesToAndArray(query: any) {
 		const entries = Object.entries<string>(query)
 		const andArray = []
 
 		entries.forEach(entry => {
-			const orArray = this.queryToOrArray(...entry)
+			const orArray = this.queryToOrInfoArray(...entry)
 			andArray.push({ infos: { some: { OR: orArray } } })
 		})
 
