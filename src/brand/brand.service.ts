@@ -20,4 +20,10 @@ export class BrandService {
 		const brands = await this.prismaService.brand.findMany()
 		return brands
 	}
+
+	async getBrandsByCategoryId(id: string) {
+		return await this.prismaService.brand.findMany({
+			where: { categories: { some: { id } } }
+		})
+	}
 }

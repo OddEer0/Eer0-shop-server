@@ -21,8 +21,7 @@ export class AuthService {
 		const hashPassword = await bcrypt.hash(userDto.password, 5)
 		const link: string = uuid.v4()
 
-		await this.usersService.createUser({ ...userDto, password: hashPassword, activationLink: link })
-		const user = await this.usersService.getUserByNickname(userDto.nickname)
+		const user = await this.usersService.createUser({ ...userDto, password: hashPassword, activationLink: link })
 
 		const tokens = this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ userId: user.id, refreshToken: tokens.refreshToken })
@@ -68,7 +67,7 @@ export class AuthService {
 			throw new UnauthorizedException('Не авторизован')
 		}
 
-		const user = await this.usersService.getUserByNickname(userData.nickname)
+		const user = await this.usersService.getUserById(userData.id)
 		const tokens = await this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ refreshToken: tokens.refreshToken, userId: user.id })
 

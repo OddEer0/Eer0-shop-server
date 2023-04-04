@@ -60,8 +60,11 @@ export class DeviceService {
 		if (!this.validateFilterQuery(req.query)) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
-		const { limit, page, category, isonlycash, isstock, maxprice, minprice, brand, ...otherQuery } = req.query
+		const { sortBy, order, limit, page, category, isonlycash, isstock, maxprice, minprice, brand, ...otherQuery } =
+			req.query
 
+		const sortby = sortBy ? (sortBy as string) : 'price'
+		const $order = order ? (order as string) : 'desc'
 		const isOnlyCash = isonlycash ? {} : { gt: 0 }
 		const isStock = isstock ? { gt: 0 } : {}
 		const priceFilter = {} as any
@@ -92,6 +95,9 @@ export class DeviceService {
 		const devices = await this.prismaService.device.findMany({
 			take: +limit,
 			skip: (+page - 1) * +limit,
+			orderBy: {
+				[sortby]: $order
+			},
 			where: {
 				categoryId: category as string,
 				count: isOnlyCash,
