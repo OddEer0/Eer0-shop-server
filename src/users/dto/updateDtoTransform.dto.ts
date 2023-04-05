@@ -17,7 +17,7 @@ export class UpdateDtoTransformDto {
 		this.avatar = data.avatar
 		this.firstName = data.firstName
 		this.lastName = data.lastName
-		this.birthday = data.birthday
+		this.birthday = typeof data.birthday === 'number' ? new Date(data.birthday) : data.birthday
 		this.subTitle = data.subTitle
 	}
 }

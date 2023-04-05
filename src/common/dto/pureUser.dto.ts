@@ -6,7 +6,7 @@ export class PureUserDto {
 	nickname: string
 	firstName: string
 	lastName: string
-	birthday: Date | null
+	birthday: number | null
 	isActivate: boolean
 	isBanned: boolean
 	subTitle: string | null
@@ -17,7 +17,7 @@ export class PureUserDto {
 		this.id = user.id
 		this.email = user.email
 		this.banReason = user.banReason
-		this.birthday = user.birthday
+		this.birthday = Date.parse(user.birthday)
 		this.firstName = user.firstName
 		this.lastName = user.lastName
 		this.nickname = user.nickname
