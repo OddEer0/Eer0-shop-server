@@ -12,6 +12,8 @@ CREATE TABLE "User" (
     "isActivate" BOOLEAN NOT NULL DEFAULT false,
     "isBanned" BOOLEAN NOT NULL DEFAULT false,
     "banReason" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -50,9 +52,12 @@ CREATE TABLE "Device" (
     "stock" INTEGER NOT NULL,
     "stockPercent" INTEGER NOT NULL,
     "count" INTEGER NOT NULL,
+    "rate" INTEGER NOT NULL,
     "images" TEXT[],
     "brandId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Device_pkey" PRIMARY KEY ("id")
 );
@@ -78,8 +83,8 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Info" (
     "id" TEXT NOT NULL,
-    "info" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "filterId" TEXT NOT NULL,
 
@@ -94,6 +99,8 @@ CREATE TABLE "Comment" (
     "description" TEXT NOT NULL,
     "like" INTEGER NOT NULL,
     "dislike" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
@@ -103,6 +110,7 @@ CREATE TABLE "Filter" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "maxValue" INTEGER,
     "minValue" INTEGER,
     "categoryId" TEXT NOT NULL,

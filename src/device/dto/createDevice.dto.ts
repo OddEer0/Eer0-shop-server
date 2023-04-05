@@ -13,6 +13,7 @@ export class CreateDeviceDto {
 	readonly stock: null | number
 	readonly stockPercent: null | number
 	readonly count: number
+	readonly rate: number
 	readonly images: string[]
 	readonly categoryId: string
 	readonly brandId: string

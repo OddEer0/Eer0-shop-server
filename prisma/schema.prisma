@@ -15,6 +15,7 @@ model User {
   password       String
   firstName      String
   lastName       String
+  subTitle       String?   
   birthday       DateTime?
   activationLink String
   isActivate     Boolean   @default(false)
@@ -24,6 +25,8 @@ model User {
   roles          Role[]
   token          Token?
   cart           Cart?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model Role {
@@ -40,76 +43,81 @@ model Token {
 }
 
 model Cart {
-  id String @id() @default(uuid())
-  user User @relation(fields: [userId], references: [id])
-  userId String @unique
+  id      String   @id() @default(uuid())
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String   @unique
   devices Device[]
 }
 
 model Device {
-  id String @id() @default(uuid())
-  name String @unique
-  description String
-  price Int
-  stock Int
+  id           String    @id() @default(uuid())
+  name         String    @unique
+  description  String
+  price        Int
+  stock        Int
   stockPercent Int
-  count Int
-  images String[]
-  comment Comment[]
-  brand Brand @relation(fields: [brandId], references: [id])
-  brandId String  
-  category Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  infos Info[]
-  carts Cart[]
+  count        Int
+  rate         Int
+  images       String[]
+  comment      Comment[]
+  brand        Brand     @relation(fields: [brandId], references: [id])
+  brandId      String  
+  category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  infos        Info[]
+  carts        Cart[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Brand {
-  id String @id() @default(uuid())
-  name String @unique
-  device Device[]
+  id         String     @id() @default(uuid())
+  name       String     @unique
+  device     Device[]
   categories Category[]
 }
 
 model Category {
-  id String @id() @default(uuid())
-  name String @unique
-  img String
-  title String
+  id      String   @id() @default(uuid())
+  name    String   @unique
+  img     String
+  title   String
   devices Device[]
   filters Filter[]
-  brands Brand[]
+  brands  Brand[]
 }
 
 model Info {
-  id String @id() @default(uuid())
-  devices Device[]
-  name String
-  title String
-  value String
-  filter Filter @relation(fields: [filterId], references: [id])
+  id       String   @id() @default(uuid())
+  devices  Device[]
+  name     String
+  title    String
+  value    String
+  filter   Filter   @relation(fields: [filterId], references: [id])
   filterId String
 }
 
 model Comment {
-  id String @id() @default(uuid())
-  device Device @relation(fields: [deviceId], references: [id])
-  deviceId String
-  user User @relation(fields: [userId], references: [id])
-  userId String
+  id          String   @id() @default(uuid())
+  device      Device   @relation(fields: [deviceId], references: [id])
+  deviceId    String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
   description String
-  like Int
-  dislike Int
+  like        Int
+  dislike     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Filter {
-  id String @id() @default(uuid())
-  name String
-  type String
-  title String
-  maxValue Int?
-  minValue Int?
-  category Category @relation(fields: [categoryId], references: [id])
+  id         String   @id() @default(uuid())
+  name       String
+  type       String
+  title      String
+  maxValue   Int?
+  minValue   Int?
+  category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
-  infos Info[]
+  infos      Info[]
 }
