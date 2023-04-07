@@ -6,13 +6,15 @@ import { CreateUserDto } from './dto/createUser.dto'
 import { User } from '@prisma/client'
 import { UpdateDtoTransformDto } from './dto/updateDtoTransform.dto'
 import { PureUserDto } from 'src/common/dto/pureUser.dto'
+import { FilesService } from 'src/files/files.service'
 
 @Injectable()
 export class UsersService {
 	constructor(
 		private prismaService: PrismaService,
 		private rolesService: RolesService,
-		private tokenService: TokenService
+		private tokenService: TokenService,
+		private filesService: FilesService
 	) {}
 
 	async createUser(dto: CreateUserDto) {
@@ -67,6 +69,26 @@ export class UsersService {
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
+		return new PureUserDto(newUser)
+	}
+
+	async addUserAvatar(id: string, image: Express.Multer.File) {
+		const user = await this.getUserById(id)
+		if (!user) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		if (user.avatar) {
+			await this.filesService.deleteFile(user.avatar.split('/').at(-1))
+		}
+
+		const fileName = await this.filesService.createFile(image, 1000, 1000)
+		const newUser = await this.prismaService.user.update({
+			where: { id },
+			data: { avatar: fileName },
+			include: { roles: { select: { value: true } } }
+		})
+
 		return new PureUserDto(newUser)
 	}
 }

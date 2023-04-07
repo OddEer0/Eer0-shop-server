@@ -41,6 +41,7 @@
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "sharp": "^0.32.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -51,6 +52,7 @@
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.13",
     "@types/jest": "29.2.4",
+    "@types/multer": "^1.4.7",
     "@types/node": "18.11.18",
     "@types/passport-jwt": "^3.0.8",
     "@types/sequelize": "^4.28.14",
