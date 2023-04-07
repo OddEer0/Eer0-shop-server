@@ -9,6 +9,7 @@ export class PureUserDto {
 	birthday: number | null
 	isActivate: boolean
 	isBanned: boolean
+	avatar: string | null
 	subTitle: string | null
 	banReason: string | null
 	roles: Role[]
@@ -24,6 +25,7 @@ export class PureUserDto {
 		this.isActivate = user.isActivate
 		this.isBanned = user.isBanned
 		this.subTitle = user.subTitle
+		this.avatar = user.avatar
 		this.roles = user.roles.map(role => role.value)
 	}
 }

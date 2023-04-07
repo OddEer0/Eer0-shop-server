@@ -5,13 +5,16 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { RolesModule } from './roles/roles.module'
 import { PrismaModule } from './prisma/prisma.module'
-import { BrandModule } from './brand/brand.module';
-import { DeviceModule } from './device/device.module';
-import { CartModule } from './cart/cart.module';
-import { CommentModule } from './comment/comment.module';
-import { CategoryModule } from './category/category.module';
-import { FilterModule } from './filter/filter.module';
-import { InfoModule } from './info/info.module';
+import { BrandModule } from './brand/brand.module'
+import { DeviceModule } from './device/device.module'
+import { CartModule } from './cart/cart.module'
+import { CommentModule } from './comment/comment.module'
+import { CategoryModule } from './category/category.module'
+import { FilterModule } from './filter/filter.module'
+import { InfoModule } from './info/info.module'
+import { FilesModule } from './files/files.module'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import * as path from 'path'
 
 @Module({
 	imports: [
@@ -27,7 +30,11 @@ import { InfoModule } from './info/info.module';
 		CommentModule,
 		CategoryModule,
 		FilterModule,
-		InfoModule
+		InfoModule,
+		FilesModule,
+		ServeStaticModule.forRoot({
+			rootPath: path.resolve(__dirname, 'static')
+		})
 	]
 })
 export class AppModule {}

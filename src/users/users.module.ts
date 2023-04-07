@@ -5,11 +5,12 @@ import { TokenModule } from 'src/token/token.module'
 import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { PrismaModule } from 'src/prisma/prisma.module'
+import { FilesModule } from 'src/files/files.module'
 
 @Module({
 	controllers: [UsersController],
 	providers: [UsersService, JwtStrategy],
-	imports: [PrismaModule, RolesModule, TokenModule],
+	imports: [PrismaModule, RolesModule, TokenModule, FilesModule],
 	exports: [UsersService]
 })
 export class UsersModule {}
