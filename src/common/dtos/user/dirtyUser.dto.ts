@@ -1,6 +1,6 @@
 import { User } from '@prisma/client'
 
-export class UpdateDtoTransformDto {
+export class DirtyUserDto {
 	readonly id: string
 	readonly nickname: string
 	readonly email: string

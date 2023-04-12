@@ -3,10 +3,9 @@ import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
 import { RolesService } from 'src/roles/roles.service'
 import { TokenService } from 'src/token/token.service'
 import { CreateUserDto } from './dto/createUser.dto'
-import { User } from '@prisma/client'
-import { UpdateDtoTransformDto } from './dto/updateDtoTransform.dto'
-import { PureUserDto } from 'src/common/dto/pureUser.dto'
+import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
+import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 
 @Injectable()
 export class UsersService {
@@ -55,17 +54,15 @@ export class UsersService {
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: User) {
+	async updateUser(id: string, dto: DirtyUserDto) {
 		const user = await this.prismaService.user.findUnique({ where: { id } })
 
 		if (!user) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
-		const transformUser = new UpdateDtoTransformDto(dto)
-
 		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...transformUser },
+			data: { ...user, ...dto },
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})

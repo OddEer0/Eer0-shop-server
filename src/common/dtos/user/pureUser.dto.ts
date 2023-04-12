@@ -1,18 +1,18 @@
 import { Role } from '@prisma/client'
 
 export class PureUserDto {
-	id: string
-	email: string
-	nickname: string
-	firstName: string
-	lastName: string
-	birthday: number | null
-	isActivate: boolean
-	isBanned: boolean
-	avatar: string | null
-	subTitle: string | null
-	banReason: string | null
-	roles: Role[]
+	readonly id: string
+	readonly email: string
+	readonly nickname: string
+	readonly firstName: string
+	readonly lastName: string
+	readonly birthday: number | null
+	readonly isActivate: boolean
+	readonly isBanned: boolean
+	readonly avatar: string | null
+	readonly subTitle: string | null
+	readonly banReason: string | null
+	readonly roles: Role[]
 
 	constructor(user) {
 		this.id = user.id

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { JwtStrategy } from 'src/auth/strategy/jwt.strategy'
+import { JwtStrategy } from '@/common/strategy/jwt.strategy'
 import { RolesModule } from 'src/roles/roles.module'
 import { TokenModule } from 'src/token/token.module'
 import { UsersController } from './users.controller'
