@@ -3,11 +3,11 @@ import { TokenModule } from 'src/token/token.module'
 import { UsersModule } from 'src/users/users.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { JwtStrategy } from '../common/strategy/jwt.strategy'
+import { JwtStrategy } from './strategy/jwt.strategy'
 
 @Module({
 	controllers: [AuthController],
-	providers: [AuthService, JwtStrategy],
+	providers: [AuthService],
 	imports: [forwardRef(() => UsersModule), TokenModule]
 })
 export class AuthModule {}

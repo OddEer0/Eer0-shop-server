@@ -1,6 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/sequelize'
 import { CreateRoleDto } from './dto/createRoleDto'
 
 @Injectable()
