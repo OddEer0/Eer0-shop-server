@@ -6,6 +6,7 @@ import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { BanUserDto } from './dto/banUser.dto'
+import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 
 @Controller('users')
 export class UsersController {
@@ -31,7 +32,7 @@ export class UsersController {
 
 	@RolesOrAuthor(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
 	@Put(':id')
-	updateUser(@Param('id') id: string, @Body() dto: DirtyUserDto) {
+	updateUser(@Param('id') id: string, @Body() dto: PureUserDto) {
 		return this.usersService.updateUser(id, dto)
 	}
 
@@ -52,5 +53,11 @@ export class UsersController {
 	@Post('unban/:id')
 	unbanUser(@Param('id') id: string) {
 		return this.usersService.unbanUser(id)
+	}
+
+	@Roles(RoleEnum.admin, RoleEnum.developer)
+	@Post('role/:id')
+	addRole(@Param('id') id: string) {
+		return
 	}
 }

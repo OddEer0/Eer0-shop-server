@@ -47,11 +47,13 @@ export class RolesOrAuthorGuard implements CanActivate {
 	}
 
 	private extractTokenFromHeader(request: Request): string | undefined {
-		const [type, token] = request.headers.authorization?.split(' ') ?? []
+		const token = request.cookies.accessToken
 
-		if (type !== 'Bearer' && !token) {
+		if (!token) {
 			throw new UnauthorizedException(UNAUTHORIZED)
 		}
+
+		console.log(token)
 
 		return token
 	}

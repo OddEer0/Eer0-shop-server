@@ -43,6 +43,6 @@ export class AuthController {
 
 	setTokens(res: Response, tokens: ITokens) {
 		res.cookie('refreshToken', tokens.refreshToken, { maxAge: REFRESH_TOKEN_TIME, httpOnly: true })
-		res.cookie('accessToken', tokens.accessToken, { maxAge: ACCESS_TOKEN_TIME })
+		res.cookie('accessToken', tokens.accessToken, { maxAge: ACCESS_TOKEN_TIME, httpOnly: true })
 	}
 }

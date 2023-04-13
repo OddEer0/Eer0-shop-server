@@ -55,15 +55,17 @@ export class UsersService {
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: DirtyUserDto) {
+	async updateUser(id: string, dto: PureUserDto) {
 		const user = await this.prismaService.user.findUnique({ where: { id } })
 
 		if (!user) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
+		const dirtyUser = new DirtyUserDto(dto)
+
 		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...dto },
+			data: { ...user, ...dirtyUser },
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
@@ -126,5 +128,13 @@ export class UsersService {
 		})
 
 		return new PureUserDto(user)
+	}
+
+	async addRole(id: string, roleName: string) {
+		const role = await this.rolesService.getRolesByValue(roleName)
+
+		const user = await this.prismaService.user.update({ where: { id }, data: { roles: { connect: { id: role.id } } } })
+
+		return user
 	}
 }
