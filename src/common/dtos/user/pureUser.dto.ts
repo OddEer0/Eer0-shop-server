@@ -1,3 +1,4 @@
+import { RoleEnum } from '@/common/types/Roles'
 import { Role } from '@prisma/client'
 
 export class PureUserDto {
@@ -13,6 +14,10 @@ export class PureUserDto {
 	readonly subTitle: string | null
 	readonly banReason: string | null
 	readonly roles: Role[]
+	readonly isAdmin: boolean
+	readonly isDeveloper: boolean
+	readonly isEmployee: boolean
+	readonly isModerator: boolean
 
 	constructor(user) {
 		this.id = user.id
@@ -27,5 +32,9 @@ export class PureUserDto {
 		this.subTitle = user.subTitle
 		this.avatar = user.avatar
 		this.roles = user.roles.map(role => role.value)
+		this.isAdmin = user.roles.some(role => role.value === RoleEnum.admin)
+		this.isDeveloper = user.roles.some(role => role.value === RoleEnum.developer)
+		this.isEmployee = user.roles.some(role => role.value === RoleEnum.employee)
+		this.isModerator = user.roles.some(role => role.value === RoleEnum.moderator)
 	}
 }

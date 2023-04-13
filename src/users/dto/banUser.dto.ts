@@ -1,10 +1,7 @@
 import { TypeValidation } from '@/common/constants/validation'
 import { IsString } from 'class-validator'
 
-export class CreateRoleDto {
+export class BanUserDto {
 	@IsString({ message: TypeValidation.IS_STRING })
-	readonly value: string
-
-	@IsString({ message: TypeValidation.IS_STRING })
-	readonly description: string
+	readonly banReason: string
 }

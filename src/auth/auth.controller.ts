@@ -5,6 +5,7 @@ import { AuthLoginDto } from './dto/authLogin.dto'
 import { Response } from 'express'
 import { Request } from 'express'
 import { ITokens } from '@/common/types/ITokens'
+import { ACCESS_TOKEN_TIME, REFRESH_TOKEN_TIME } from './auth.const'
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +42,7 @@ export class AuthController {
 	}
 
 	setTokens(res: Response, tokens: ITokens) {
-		res.cookie('refreshToken', tokens.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-		res.cookie('accessToken', tokens.accessToken, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+		res.cookie('refreshToken', tokens.refreshToken, { maxAge: REFRESH_TOKEN_TIME, httpOnly: true })
+		res.cookie('accessToken', tokens.accessToken, { maxAge: ACCESS_TOKEN_TIME })
 	}
 }

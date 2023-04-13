@@ -1,5 +1,3 @@
-import { User } from '@prisma/client'
-
 export class DirtyUserDto {
 	readonly id: string
 	readonly nickname: string
@@ -10,7 +8,7 @@ export class DirtyUserDto {
 	readonly birthday: null | Date
 	readonly subTitle: null | string
 
-	constructor(data: User) {
+	constructor(data) {
 		this.id = data.id
 		this.nickname = data.nickname
 		this.email = data.email

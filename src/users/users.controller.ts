@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
+import { BanUserDto } from './dto/banUser.dto'
 
 @Controller('users')
 export class UsersController {
@@ -39,5 +40,17 @@ export class UsersController {
 	@UseInterceptors(FileInterceptor('image'))
 	addUserAvatar(@Param('id') id: string, @UploadedFile() image: Express.Multer.File) {
 		return this.usersService.addUserAvatar(id, image)
+	}
+
+	@Roles(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
+	@Post('ban/:id')
+	banUser(@Param('id') id: string, @Body() dto: BanUserDto) {
+		return this.usersService.banUser(id, dto)
+	}
+
+	@Roles(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
+	@Post('unban/:id')
+	unbanUser(@Param('id') id: string) {
+		return this.usersService.unbanUser(id)
 	}
 }

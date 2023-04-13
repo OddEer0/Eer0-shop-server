@@ -15,10 +15,15 @@ import { InfoModule } from './info/info.module'
 import { FilesModule } from './files/files.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import * as path from 'path'
+import { GlobalJwtModule } from './common/modules/globalJwt.module'
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true, envFilePath: `.env.${process.env.NODE_ENV}` }),
+		ServeStaticModule.forRoot({
+			rootPath: path.resolve(__dirname, 'static')
+		}),
+		GlobalJwtModule,
 		UsersModule,
 		TokenModule,
 		RolesModule,
@@ -31,10 +36,7 @@ import * as path from 'path'
 		CategoryModule,
 		FilterModule,
 		InfoModule,
-		FilesModule,
-		ServeStaticModule.forRoot({
-			rootPath: path.resolve(__dirname, 'static')
-		})
+		FilesModule
 	]
 })
 export class AppModule {}

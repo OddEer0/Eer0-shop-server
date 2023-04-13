@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/createUser.dto'
 import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
+import { BanUserDto } from './dto/banUser.dto'
 
 @Injectable()
 export class UsersService {
@@ -87,5 +88,43 @@ export class UsersService {
 		})
 
 		return new PureUserDto(newUser)
+	}
+
+	async banUser(id: string, banDto: BanUserDto) {
+		const isHave = await this.prismaService.user.findUnique({
+			where: { id }
+		})
+
+		if (!isHave) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		const user = await this.prismaService.user.update({
+			where: { id },
+			data: { isBanned: true, banReason: banDto.banReason }
+		})
+
+		return new PureUserDto(user)
+	}
+
+	async unbanUser(id) {
+		const isHave = await this.prismaService.user.findUnique({
+			where: { id }
+		})
+
+		if (!isHave) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		if (!isHave.isBanned) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		const user = await this.prismaService.user.update({
+			where: { id },
+			data: { isBanned: false, banReason: null }
+		})
+
+		return new PureUserDto(user)
 	}
 }
