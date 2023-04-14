@@ -1,4 +1,5 @@
 import { IBaseQuery, TransformBaseQueryDto } from '@/common/dtos/transformBaseQuery.dto'
+import { BadRequestException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 
 export interface IDeviceQuery extends IBaseQuery {
@@ -17,6 +18,10 @@ export class TransformDeviceQueryDto {
 		const query = new TransformBaseQueryDto(queryObj, { sortBy: 'rate' })
 		const { category, isOnlyCash, isStock, minprice, maxprice, brand, ...other } = query.other
 		this.base = query.base as IDeviceQuery
+
+		if (!category) {
+			throw new BadRequestException()
+		}
 
 		this.base.category = category
 		this.base.isOnlyCash = isOnlyCash ? {} : { gt: 0 }
