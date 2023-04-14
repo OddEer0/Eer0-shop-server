@@ -61,6 +61,8 @@ export class DeviceService {
 
 		const andArray = this.queriesToAndArray(otherFilterParam)
 
+		console.log(baseSortParam, otherFilterParam)
+
 		const deviceCount = await this.prismaService.device.count({
 			where: {
 				categoryId: baseSortParam.category,

@@ -18,7 +18,7 @@ export class TransformBaseQueryDto {
 		this.base.page = page ? +page : 1
 		this.base.limit = limit ? +limit : 30
 		this.base.sortBy = sortBy ? sortBy : defaultValue.sortBy
-		this.base.order = order ? defaultValue?.order : 'asc'
+		this.base.order = order ? order : defaultValue.order ? defaultValue.order : 'asc'
 
 		this.other = other
 	}
