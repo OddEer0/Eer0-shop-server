@@ -24,7 +24,6 @@ model User {
   comments       Comment[]
   roles          Role[]
   token          Token?
-  cart           Cart?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -40,13 +39,6 @@ model Token {
   user         User    @relation(fields: [userId], references: [id])
   userId       String  @id
   refreshToken String? @unique
-}
-
-model Cart {
-  id      String   @id() @default(uuid())
-  user    User     @relation(fields: [userId], references: [id])
-  userId  String   @unique
-  devices Device[]
 }
 
 model Device {
@@ -65,7 +57,6 @@ model Device {
   category     Category  @relation(fields: [categoryId], references: [id])
   categoryId   String
   infos        Info[]
-  carts        Cart[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
