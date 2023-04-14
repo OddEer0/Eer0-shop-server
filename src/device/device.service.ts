@@ -1,10 +1,11 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { BrandService } from 'src/brand/brand.service'
 import { CategoryService } from 'src/category/category.service'
 import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
-import { IDeviceQuery } from './dto/transformDeviceQuery.dto'
+import { IDeviceQuery } from './types/Query.types'
+import { DEVICE_NOT_FOUND } from './device.const'
 
 @Injectable()
 export class DeviceService {
@@ -51,17 +52,10 @@ export class DeviceService {
 		return device
 	}
 
-	async getAllDevice() {
-		const devices = await this.prismaService.device.findMany({ include: { brand: true, category: true, infos: true } })
-		return devices
-	}
-
 	async getFilteredAndSortDevice(baseSortParam: IDeviceQuery, otherFilterParam) {
 		const orArray = this.brandQueryToOrArray(baseSortParam.brand)
 
 		const andArray = this.queriesToAndArray(otherFilterParam)
-
-		console.log(baseSortParam, otherFilterParam)
 
 		const deviceCount = await this.prismaService.device.count({
 			where: {
@@ -135,5 +129,18 @@ export class DeviceService {
 	async deleteDevice(id: string) {
 		await this.prismaService.device.delete({ where: { id } })
 		return 'Девайс с ' + id + 'удалён'
+	}
+
+	async getDeviceById(id: string, withInfo?: boolean, withCount?: boolean) {
+		const device = await this.prismaService.device.findUnique({
+			where: { id },
+			include: { infos: !!withInfo, _count: { select: { comment: !!withCount } } }
+		})
+
+		if (!device) {
+			throw new NotFoundException(DEVICE_NOT_FOUND)
+		}
+
+		return device
 	}
 }

@@ -12,7 +12,7 @@ import { ROLES_KEY } from '../decorators/rolesAuth.decorator'
 import { Request } from 'express'
 import { RoleValidation } from '../constants/validation'
 import { ConfigService } from '@nestjs/config'
-import { UNAUTHORIZED } from '../constants/auth'
+import { UNAUTHORIZED } from '../constants/status'
 
 @Injectable()
 export class RolesOrAuthorGuard implements CanActivate {

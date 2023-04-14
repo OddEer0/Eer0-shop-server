@@ -1,11 +1,4 @@
-import { IQueryOrderType } from '@/common/types/IBaseQuery'
-
-export interface IBaseQuery {
-	page?: number
-	limit?: number
-	sortBy: string
-	order?: IQueryOrderType
-}
+import { IBaseQuery } from '../types/Query.types'
 
 export class TransformBaseQueryDto {
 	base: IBaseQuery

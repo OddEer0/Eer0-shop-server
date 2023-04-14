@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import { DeviceService } from './device.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
@@ -25,5 +25,10 @@ export class DeviceController {
 	@Delete(':id')
 	deleteDevice(@Param('id') id: string) {
 		return this.deviceService.deleteDevice(id)
+	}
+
+	@Get(':id')
+	getOneDevice(@Param('id') id: string) {
+		return this.deviceService.getDeviceById(id, true, true)
 	}
 }

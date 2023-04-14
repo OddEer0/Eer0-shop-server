@@ -1,14 +1,6 @@
-import { IBaseQuery, TransformBaseQueryDto } from '@/common/dtos/transformBaseQuery.dto'
-import { BadRequestException } from '@nestjs/common'
+import { TransformBaseQueryDto } from '@/common/dtos/transformBaseQuery.dto'
 import { Prisma } from '@prisma/client'
-
-export interface IDeviceQuery extends IBaseQuery {
-	category: string
-	isOnlyCash: Prisma.NestedIntFilter
-	isStock: Prisma.NestedIntFilter
-	price: Prisma.NestedIntFilter
-	brand: string
-}
+import { IDeviceQuery } from '../types/Query.types'
 
 export class TransformDeviceQueryDto {
 	base: IDeviceQuery
@@ -18,10 +10,6 @@ export class TransformDeviceQueryDto {
 		const query = new TransformBaseQueryDto(queryObj, { sortBy: 'rate' })
 		const { category, isOnlyCash, isStock, minprice, maxprice, brand, ...other } = query.other
 		this.base = query.base as IDeviceQuery
-
-		if (!category) {
-			throw new BadRequestException()
-		}
 
 		this.base.category = category
 		this.base.isOnlyCash = isOnlyCash ? {} : { gt: 0 }

@@ -1,6 +1,7 @@
 import {
 	CanActivate,
 	ExecutionContext,
+	ForbiddenException,
 	HttpException,
 	HttpStatus,
 	Injectable,
@@ -12,8 +13,8 @@ import { ROLES_KEY } from '../decorators/rolesAuth.decorator'
 import { Request } from 'express'
 import { RoleValidation } from '../constants/validation'
 import { ConfigService } from '@nestjs/config'
-import { UNAUTHORIZED } from '../constants/auth'
-import { IJwtPayload } from '../types/IJwtPayload'
+import { UNAUTHORIZED } from '../constants/status'
+import { IJwtUserPayload } from '../types/jwt.types'
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -29,7 +30,7 @@ export class RolesGuard implements CanActivate {
 				return true
 			}
 
-			const user = await this.jwtService.verifyAsync<IJwtPayload>(token, {
+			const user = await this.jwtService.verifyAsync<IJwtUserPayload>(token, {
 				secret: this.configService.get('ACCESS_SECRET_KEY')
 			})
 
@@ -37,10 +38,10 @@ export class RolesGuard implements CanActivate {
 			if (user.roles.some(role => reqRoles.includes(role))) {
 				return true
 			} else {
-				throw new HttpException(RoleValidation.NOT_ACCESS, HttpStatus.FORBIDDEN)
+				throw new ForbiddenException(RoleValidation.NOT_ACCESS)
 			}
 		} catch (error) {
-			throw new HttpException(RoleValidation.NOT_ACCESS, HttpStatus.FORBIDDEN)
+			throw new ForbiddenException(RoleValidation.NOT_ACCESS)
 		}
 	}
 
