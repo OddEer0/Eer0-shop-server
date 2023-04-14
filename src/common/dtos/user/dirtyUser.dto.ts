@@ -1,6 +1,4 @@
-import { User } from '@prisma/client'
-
-export class UpdateDtoTransformDto {
+export class DirtyUserDto {
 	readonly id: string
 	readonly nickname: string
 	readonly email: string
@@ -10,7 +8,7 @@ export class UpdateDtoTransformDto {
 	readonly birthday: null | Date
 	readonly subTitle: null | string
 
-	constructor(data: User) {
+	constructor(data) {
 		this.id = data.id
 		this.nickname = data.nickname
 		this.email = data.email

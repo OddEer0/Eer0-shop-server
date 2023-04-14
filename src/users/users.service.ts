@@ -3,10 +3,10 @@ import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
 import { RolesService } from 'src/roles/roles.service'
 import { TokenService } from 'src/token/token.service'
 import { CreateUserDto } from './dto/createUser.dto'
-import { User } from '@prisma/client'
-import { UpdateDtoTransformDto } from './dto/updateDtoTransform.dto'
-import { PureUserDto } from 'src/common/dto/pureUser.dto'
+import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
+import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
+import { BanUserDto } from './dto/banUser.dto'
 
 @Injectable()
 export class UsersService {
@@ -18,7 +18,7 @@ export class UsersService {
 	) {}
 
 	async createUser(dto: CreateUserDto) {
-		const role = await this.rolesService.getRolesByValue('ADMIN')
+		const role = await this.rolesService.getRolesByValue('USER')
 		const user = await this.prismaService.user.create({
 			data: { ...dto, roles: { connect: { id: role.id } } },
 			include: { roles: { select: { value: true } } }
@@ -32,6 +32,11 @@ export class UsersService {
 			where: { nickname },
 			include: { roles: { select: { value: true } } }
 		})
+
+		if (!user) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
 		return user
 	}
 
@@ -46,6 +51,11 @@ export class UsersService {
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
+
+		if (!user) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
 		return user
 	}
 
@@ -55,17 +65,17 @@ export class UsersService {
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: User) {
+	async updateUser(id: string, dto: PureUserDto) {
 		const user = await this.prismaService.user.findUnique({ where: { id } })
 
 		if (!user) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
-		const transformUser = new UpdateDtoTransformDto(dto)
+		const dirtyUser = new DirtyUserDto(dto)
 
 		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...transformUser },
+			data: { ...user, ...dirtyUser },
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
@@ -90,5 +100,43 @@ export class UsersService {
 		})
 
 		return new PureUserDto(newUser)
+	}
+
+	async banUser(id: string, banDto: BanUserDto) {
+		const isHave = await this.getUserById(id)
+
+		if (isHave.isBanned) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		const user = await this.prismaService.user.update({
+			where: { id },
+			data: { isBanned: true, banReason: banDto.banReason }
+		})
+
+		return new PureUserDto(user)
+	}
+
+	async unbanUser(id) {
+		const isHave = await this.getUserById(id)
+
+		if (!isHave.isBanned) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		const user = await this.prismaService.user.update({
+			where: { id },
+			data: { isBanned: false, banReason: null }
+		})
+
+		return new PureUserDto(user)
+	}
+
+	async addRole(id: string, roleName: string) {
+		const role = await this.rolesService.getRolesByValue(roleName)
+
+		const user = await this.prismaService.user.update({ where: { id }, data: { roles: { connect: { id: role.id } } } })
+
+		return user
 	}
 }

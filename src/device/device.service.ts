@@ -1,10 +1,11 @@
-import { ForbiddenException, HttpStatus, Injectable, Req } from '@nestjs/common'
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { BrandService } from 'src/brand/brand.service'
 import { CategoryService } from 'src/category/category.service'
 import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
-import { Request } from 'express'
+import { IDeviceQuery } from './types/Query.types'
+import { DEVICE_NOT_FOUND } from './device.const'
 
 @Injectable()
 export class DeviceService {
@@ -51,58 +52,35 @@ export class DeviceService {
 		return device
 	}
 
-	async getAllDevice() {
-		const devices = await this.prismaService.device.findMany({ include: { brand: true, category: true, infos: true } })
-		return devices
-	}
+	async getFilteredAndSortDevice(baseSortParam: IDeviceQuery, otherFilterParam) {
+		const orArray = this.brandQueryToOrArray(baseSortParam.brand)
 
-	async getFilteredAndSortDevice(req: Request) {
-		if (!this.validateFilterQuery(req.query)) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
-		}
-		const { sortBy, order, limit, page, category, isonlycash, isstock, maxprice, minprice, brand, ...otherQuery } =
-			req.query
-
-		const sortby = sortBy ? (sortBy as string) : 'price'
-		const $order = order ? (order as string) : 'desc'
-		const isOnlyCash = isonlycash ? {} : { gt: 0 }
-		const isStock = isstock ? { gt: 0 } : {}
-		const priceFilter = {} as any
-		if (minprice) {
-			priceFilter.gt = +minprice
-		}
-		if (maxprice) {
-			priceFilter.lt = +maxprice
-		}
-
-		const orArray = this.brandQueryToOrArray(brand as string)
-
-		const andArray = this.queriesToAndArray(otherQuery)
+		const andArray = this.queriesToAndArray(otherFilterParam)
 
 		const deviceCount = await this.prismaService.device.count({
 			where: {
-				categoryId: category as string,
-				count: isOnlyCash,
-				stock: isStock,
-				price: priceFilter,
+				categoryId: baseSortParam.category,
+				count: baseSortParam.isOnlyCash,
+				stock: baseSortParam.isStock,
+				price: baseSortParam.price,
 				AND: andArray,
 				OR: orArray
 			}
 		})
 
-		const pageCount = Math.ceil(deviceCount / +limit)
+		const pageCount = Math.ceil(deviceCount / baseSortParam.limit)
 
 		const devices = await this.prismaService.device.findMany({
-			take: +limit,
-			skip: (+page - 1) * +limit,
+			take: baseSortParam.limit,
+			skip: (baseSortParam.page - 1) * baseSortParam.limit,
 			orderBy: {
-				[sortby]: $order
+				[baseSortParam.sortBy]: baseSortParam.order
 			},
 			where: {
-				categoryId: category as string,
-				count: isOnlyCash,
-				stock: isStock,
-				price: priceFilter,
+				categoryId: baseSortParam.category,
+				count: baseSortParam.isOnlyCash,
+				stock: baseSortParam.isStock,
+				price: baseSortParam.price,
 				AND: andArray,
 				OR: orArray
 			},
@@ -113,13 +91,6 @@ export class DeviceService {
 			devices,
 			pageCount
 		}
-	}
-
-	private validateFilterQuery(query: any) {
-		if (!query.page || !query.limit || !query.category) {
-			return false
-		}
-		return true
 	}
 
 	private queryToOrInfoArray(name: string, value: string) {
@@ -158,5 +129,18 @@ export class DeviceService {
 	async deleteDevice(id: string) {
 		await this.prismaService.device.delete({ where: { id } })
 		return 'Девайс с ' + id + 'удалён'
+	}
+
+	async getDeviceById(id: string, withInfo?: boolean, withCount?: boolean) {
+		const device = await this.prismaService.device.findUnique({
+			where: { id },
+			include: { infos: !!withInfo, _count: { select: { comment: !!withCount } } }
+		})
+
+		if (!device) {
+			throw new NotFoundException(DEVICE_NOT_FOUND)
+		}
+
+		return device
 	}
 }

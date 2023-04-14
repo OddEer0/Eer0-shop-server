@@ -1,6 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service'
-import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/sequelize'
+import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
 import { CreateRoleDto } from './dto/createRoleDto'
 
 @Injectable()
@@ -9,6 +8,11 @@ export class RolesService {
 
 	async getRolesByValue(value: string) {
 		const role = await this.prismaService.role.findUnique({ where: { value } })
+
+		if (!role) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
 		return role
 	}
 
@@ -25,5 +29,15 @@ export class RolesService {
 	async deleteRole(id: string) {
 		await this.prismaService.role.delete({ where: { id } })
 		return `Роль с данным id ${id} был удален`
+	}
+
+	async getRoleById(id: string) {
+		const role = await this.prismaService.role.findUnique({ where: { id } })
+
+		if (!role) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
+		return role
 	}
 }

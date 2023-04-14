@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt/dist'
-import { User } from '@prisma/client'
-import { IJwtPayload } from 'src/auth/types/jwtPayload.types'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { SaveTokenDto } from './dto/saveToken.dto'
+import { IJwtUserPayload } from '@/common/types/jwt.types'
 
 @Injectable()
 export class TokenService {
@@ -58,7 +57,7 @@ export class TokenService {
 	}
 
 	parseAccessToken(token: string) {
-		return this.jwtService.decode(token) as IJwtPayload
+		return this.jwtService.decode(token) as IJwtUserPayload
 	}
 
 	validateAccessToken(token: string) {
