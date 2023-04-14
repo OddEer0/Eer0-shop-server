@@ -32,6 +32,11 @@ export class UsersService {
 			where: { nickname },
 			include: { roles: { select: { value: true } } }
 		})
+
+		if (!user) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
 		return user
 	}
 
@@ -46,6 +51,11 @@ export class UsersService {
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
+
+		if (!user) {
+			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		}
+
 		return user
 	}
 
@@ -93,11 +103,9 @@ export class UsersService {
 	}
 
 	async banUser(id: string, banDto: BanUserDto) {
-		const isHave = await this.prismaService.user.findUnique({
-			where: { id }
-		})
+		const isHave = await this.getUserById(id)
 
-		if (!isHave) {
+		if (isHave.isBanned) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
@@ -110,13 +118,7 @@ export class UsersService {
 	}
 
 	async unbanUser(id) {
-		const isHave = await this.prismaService.user.findUnique({
-			where: { id }
-		})
-
-		if (!isHave) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
-		}
+		const isHave = await this.getUserById(id)
 
 		if (!isHave.isBanned) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)

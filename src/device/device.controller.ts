@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query, Req } from '@nestjs/common'
 import { DeviceService } from './device.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
-import { Request } from 'express'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
+import { TransformDeviceQueryPipe } from './pipes/transformDeviceQuery.pipes'
+import { TransformDeviceQueryDto } from './dto/transformDeviceQuery.dto'
 
 @Controller('device')
 export class DeviceController {
@@ -16,8 +17,8 @@ export class DeviceController {
 	}
 
 	@Get()
-	getFilteredDevice(@Req() req: Request) {
-		return this.deviceService.getFilteredAndSortDevice(req)
+	getFilteredAndSortedDevice(@Query(new TransformDeviceQueryPipe()) query: TransformDeviceQueryDto) {
+		return this.deviceService.getFilteredAndSortDevice(query.base, query.other)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer, RoleEnum.employee, RoleEnum.moderator)
