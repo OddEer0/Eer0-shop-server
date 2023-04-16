@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service'
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { RolesService } from 'src/roles/roles.service'
 import { TokenService } from 'src/token/token.service'
 import { CreateUserDto } from './dto/createUser.dto'
@@ -7,6 +7,8 @@ import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { BanUserDto } from './dto/banUser.dto'
+import { CartService } from 'src/cart/cart.service'
+import { USER_OR_ROLE_NOT_FOUND } from './user.const'
 
 @Injectable()
 export class UsersService {
@@ -14,7 +16,8 @@ export class UsersService {
 		private prismaService: PrismaService,
 		private rolesService: RolesService,
 		private tokenService: TokenService,
-		private filesService: FilesService
+		private filesService: FilesService,
+		private cartService: CartService
 	) {}
 
 	async createUser(dto: CreateUserDto) {
@@ -23,6 +26,7 @@ export class UsersService {
 			data: { ...dto, roles: { connect: { id: role.id } } },
 			include: { roles: { select: { value: true } } }
 		})
+		await this.cartService.createCart(user.id)
 
 		return user
 	}
@@ -33,16 +37,12 @@ export class UsersService {
 			include: { roles: { select: { value: true } } }
 		})
 
-		if (!user) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
-		}
-
 		return user
 	}
 
 	async getAll() {
 		return await this.prismaService.user.findMany({
-			include: { roles: { select: { value: true, description: true } } }
+			include: { roles: { select: { value: true, description: true } }, cart: { include: { devices: true } } }
 		})
 	}
 
@@ -51,10 +51,6 @@ export class UsersService {
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
-
-		if (!user) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
-		}
 
 		return user
 	}
@@ -135,8 +131,14 @@ export class UsersService {
 	async addRole(id: string, roleName: string) {
 		const role = await this.rolesService.getRolesByValue(roleName)
 
-		const user = await this.prismaService.user.update({ where: { id }, data: { roles: { connect: { id: role.id } } } })
+		const user = await this.getUserById(id)
 
-		return user
+		if (!role && !user) {
+			throw new NotFoundException(USER_OR_ROLE_NOT_FOUND)
+		}
+
+		return await this.prismaService.user.update({ where: { id }, data: { roles: { connect: { id: role.id } } } })
 	}
+
+	async addDeviceToCart() {}
 }

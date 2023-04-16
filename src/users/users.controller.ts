@@ -7,6 +7,7 @@ import { RoleEnum } from '@/common/types/Roles'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { BanUserDto } from './dto/banUser.dto'
 import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
+import { AddRoleDto } from './dto/addRole.dto'
 
 @Controller('users')
 export class UsersController {
@@ -56,8 +57,8 @@ export class UsersController {
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer)
-	@Post('role/:id')
-	addRole(@Param('id') id: string) {
-		return
+	@Post('role')
+	addRole(@Body() dto: AddRoleDto) {
+		return this.usersService.addRole(dto.userId, dto.roleName)
 	}
 }

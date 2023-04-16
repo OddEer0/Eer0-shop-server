@@ -53,8 +53,6 @@ export class RolesOrAuthorGuard implements CanActivate {
 			throw new UnauthorizedException(UNAUTHORIZED)
 		}
 
-		console.log(token)
-
 		return token
 	}
 }
