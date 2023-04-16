@@ -21,11 +21,18 @@ model User {
   isActivate     Boolean   @default(false)
   isBanned       Boolean   @default(false)
   banReason      String?
+  cart           Cart?
   comments       Comment[]
   roles          Role[]
   token          Token?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model Cart {
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String  @id
+  devices      Device[]
 }
 
 model Role {
@@ -51,6 +58,7 @@ model Device {
   count        Int
   rate         Int
   images       String[]
+  carts        Cart[]
   comment      Comment[]
   brand        Brand     @relation(fields: [brandId], references: [id])
   brandId      String  
