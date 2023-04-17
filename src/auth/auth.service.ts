@@ -7,6 +7,7 @@ import { TokenService } from 'src/token/token.service'
 import { AuthLoginDto } from './dto/authLogin.dto'
 import { EMAIL_OR_PASSWORD_INCORRECT, USER_EXISTS } from './auth.const'
 import { PureUserDto } from '../common/dtos/user/pureUser.dto'
+import { UNAUTHORIZED } from '@/common/constants/status'
 
 @Injectable()
 export class AuthService {
@@ -57,14 +58,14 @@ export class AuthService {
 
 	async refresh(refreshToken: string) {
 		if (!refreshToken) {
-			throw new UnauthorizedException('Не авторизован')
+			throw new UnauthorizedException(UNAUTHORIZED)
 		}
 
 		const userData = this.tokenService.validateRefreshToken(refreshToken)
 		const tokenFromDb = this.tokenService.findRefreshToken(refreshToken)
 
 		if (!userData || !tokenFromDb) {
-			throw new UnauthorizedException('Не авторизован')
+			throw new UnauthorizedException(UNAUTHORIZED)
 		}
 
 		const user = await this.usersService.getUserById(userData.id)

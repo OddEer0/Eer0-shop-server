@@ -9,10 +9,6 @@ export class RolesService {
 	async getRolesByValue(value: string) {
 		const role = await this.prismaService.role.findUnique({ where: { value } })
 
-		if (!role) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
-		}
-
 		return role
 	}
 

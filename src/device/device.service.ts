@@ -5,7 +5,6 @@ import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
 import { IDeviceQuery } from './types/Query.types'
-import { DEVICE_NOT_FOUND } from './device.const'
 
 @Injectable()
 export class DeviceService {
@@ -134,12 +133,8 @@ export class DeviceService {
 	async getDeviceById(id: string, withInfo?: boolean, withCount?: boolean) {
 		const device = await this.prismaService.device.findUnique({
 			where: { id },
-			include: { infos: !!withInfo, _count: { select: { comment: !!withCount } } }
+			include: { infos: withInfo, _count: { select: { comment: withCount } } }
 		})
-
-		if (!device) {
-			throw new NotFoundException(DEVICE_NOT_FOUND)
-		}
 
 		return device
 	}

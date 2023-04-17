@@ -3,6 +3,7 @@ import { CreateRoleDto } from './dto/createRoleDto'
 import { RolesService } from './roles.service'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
+import { AddRoleDto } from '../users/dto/addRole.dto'
 
 @Controller('roles')
 export class RolesController {

@@ -53,7 +53,7 @@ export class TokenService {
 	}
 
 	validateRefreshToken(token: string) {
-		return this.jwtService.verify(token, { secret: process.env.REFRESH_SECRET_KEY })
+		return this.jwtService.verify<IJwtUserPayload>(token, { secret: this.configService.get('REFRESH_SECRET_KEY') })
 	}
 
 	parseAccessToken(token: string) {
@@ -61,6 +61,6 @@ export class TokenService {
 	}
 
 	validateAccessToken(token: string) {
-		return this.jwtService.verify(token, { secret: process.env.ACCESS_SECRET_KEY })
+		return this.jwtService.verify<IJwtUserPayload>(token, { secret: this.configService.get('ACCESS_SECRET_KEY') })
 	}
 }
