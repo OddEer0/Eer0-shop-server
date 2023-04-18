@@ -1,11 +1,12 @@
 import { RoleEnum } from '@/common/types/Roles'
-import { Body, Controller, Get, NotFoundException, Param, Post, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Req } from '@nestjs/common'
 import { AddDeviceToCartDto } from './dto/addDeviceToCart.dto'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { CartService } from './cart.service'
 import { CART_NOT_FOUND } from './cart.const'
 import { RemoveDeviceFromCartDto } from './dto/removeDeviceFromCart.dto'
 import { Request } from 'express'
+import { SetCountCartDevice } from './dto/setCountCartDevice.dto'
 
 @Controller('cart')
 export class CartController {
@@ -18,9 +19,9 @@ export class CartController {
 	}
 
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)
-	@Post('device/remove')
-	removeDeviceFromCart(@Body() dto: RemoveDeviceFromCartDto) {
-		return this.cartService.removeDeviceFromCart(dto.deviceId, dto.userId)
+	@Delete('device/:id')
+	removeDeviceFromCart(@Param('id') id: string) {
+		return this.cartService.removeDeviceFromCart(id)
 	}
 
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)
@@ -40,5 +41,11 @@ export class CartController {
 		const { accessToken } = req.cookies
 
 		return this.cartService.getCartByAccessToken(accessToken)
+	}
+
+	@RolesOrAuthor(RoleEnum.developer, RoleEnum.admin)
+	@Post('device/count/:id')
+	setCountDevice(@Body() dto: SetCountCartDevice, @Param('id') id: string) {
+		return this.cartService.setCartDeviceCount(id, dto.count)
 	}
 }

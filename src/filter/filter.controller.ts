@@ -26,7 +26,6 @@ export class FilterController {
 		return this.filterService.getFilterById(id)
 	}
 
-	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Get('/category/:id')
 	getFilterByCategoryId(@Param('id') id: string) {
 		return this.filterService.getFiltersByCategoryId(id)
