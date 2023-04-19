@@ -53,7 +53,7 @@ export class AuthService {
 		if (!refreshToken) {
 			throw new UnauthorizedException()
 		}
-		this.tokenService.nullRefreshToken(refreshToken)
+		await this.tokenService.nullRefreshToken(refreshToken)
 	}
 
 	async refresh(refreshToken: string) {
