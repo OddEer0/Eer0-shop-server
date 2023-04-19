@@ -10,7 +10,7 @@ import { CartModule } from 'src/cart/cart.module'
 @Module({
 	controllers: [DeviceController],
 	providers: [DeviceService],
-	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule, forwardRef(() => CartModule)],
+	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule, CartModule],
 	exports: [DeviceService]
 })
 export class DeviceModule {}

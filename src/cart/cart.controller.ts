@@ -3,10 +3,10 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Req } fr
 import { AddDeviceToCartDto } from './dto/addDeviceToCart.dto'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { CartService } from './cart.service'
-import { CART_NOT_FOUND } from './cart.const'
 import { RemoveDeviceFromCartDto } from './dto/removeDeviceFromCart.dto'
 import { Request } from 'express'
 import { SetCountCartDevice } from './dto/setCountCartDevice.dto'
+import { CART_NOT_FOUND } from './cart.const'
 
 @Controller('cart')
 export class CartController {
@@ -27,7 +27,7 @@ export class CartController {
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)
 	@Get(':id')
 	async getOneCart(@Param('id') id: string) {
-		const cart = await this.cartService.getCartByUserId(id, true)
+		const cart = await this.cartService.getCartByUserId(id)
 
 		if (!cart) {
 			throw new NotFoundException(CART_NOT_FOUND)

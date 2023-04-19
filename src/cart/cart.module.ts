@@ -8,7 +8,7 @@ import { TokenModule } from 'src/token/token.module'
 @Module({
 	controllers: [CartController],
 	providers: [CartService],
-	imports: [PrismaModule, forwardRef(() => DeviceModule), TokenModule],
+	imports: [PrismaModule, TokenModule],
 	exports: [CartService]
 })
 export class CartModule {}
