@@ -7,6 +7,7 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
+    "subTitle" TEXT,
     "birthday" TIMESTAMP(3),
     "activationLink" TEXT NOT NULL,
     "isActivate" BOOLEAN NOT NULL DEFAULT false,
@@ -16,6 +17,50 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CartDevice" (
+    "id" TEXT NOT NULL,
+    "count" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "deviceId" TEXT NOT NULL,
+
+    CONSTRAINT "CartDevice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "PurchaseDevice" (
+    "id" TEXT NOT NULL,
+    "count" INTEGER NOT NULL,
+    "stock" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "deviceId" TEXT NOT NULL,
+
+    CONSTRAINT "PurchaseDevice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "BookingsDevice" (
+    "id" TEXT NOT NULL,
+    "count" INTEGER NOT NULL,
+    "stock" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "deviceId" TEXT NOT NULL,
+
+    CONSTRAINT "BookingsDevice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Refound" (
+    "id" TEXT NOT NULL,
+    "count" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
+    "stock" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "deviceId" TEXT NOT NULL,
+
+    CONSTRAINT "Refound_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -36,14 +81,6 @@ CREATE TABLE "Token" (
 );
 
 -- CreateTable
-CREATE TABLE "Cart" (
-    "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-
-    CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Device" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -52,7 +89,6 @@ CREATE TABLE "Device" (
     "stock" INTEGER NOT NULL,
     "stockPercent" INTEGER NOT NULL,
     "count" INTEGER NOT NULL,
-    "rate" INTEGER NOT NULL,
     "images" TEXT[],
     "brandId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
@@ -125,7 +161,7 @@ CREATE TABLE "_RoleToUser" (
 );
 
 -- CreateTable
-CREATE TABLE "_CartToDevice" (
+CREATE TABLE "_DeviceToUser" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -155,9 +191,6 @@ CREATE UNIQUE INDEX "Role_value_key" ON "Role"("value");
 CREATE UNIQUE INDEX "Token_refreshToken_key" ON "Token"("refreshToken");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Cart_userId_key" ON "Cart"("userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Device_name_key" ON "Device"("name");
 
 -- CreateIndex
@@ -173,10 +206,10 @@ CREATE UNIQUE INDEX "_RoleToUser_AB_unique" ON "_RoleToUser"("A", "B");
 CREATE INDEX "_RoleToUser_B_index" ON "_RoleToUser"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_CartToDevice_AB_unique" ON "_CartToDevice"("A", "B");
+CREATE UNIQUE INDEX "_DeviceToUser_AB_unique" ON "_DeviceToUser"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_CartToDevice_B_index" ON "_CartToDevice"("B");
+CREATE INDEX "_DeviceToUser_B_index" ON "_DeviceToUser"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_DeviceToInfo_AB_unique" ON "_DeviceToInfo"("A", "B");
@@ -191,10 +224,31 @@ CREATE UNIQUE INDEX "_BrandToCategory_AB_unique" ON "_BrandToCategory"("A", "B")
 CREATE INDEX "_BrandToCategory_B_index" ON "_BrandToCategory"("B");
 
 -- AddForeignKey
-ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CartDevice" ADD CONSTRAINT "CartDevice_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CartDevice" ADD CONSTRAINT "CartDevice_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PurchaseDevice" ADD CONSTRAINT "PurchaseDevice_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PurchaseDevice" ADD CONSTRAINT "PurchaseDevice_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BookingsDevice" ADD CONSTRAINT "BookingsDevice_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BookingsDevice" ADD CONSTRAINT "BookingsDevice_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refound" ADD CONSTRAINT "Refound_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refound" ADD CONSTRAINT "Refound_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Device" ADD CONSTRAINT "Device_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -221,10 +275,10 @@ ALTER TABLE "_RoleToUser" ADD CONSTRAINT "_RoleToUser_A_fkey" FOREIGN KEY ("A") 
 ALTER TABLE "_RoleToUser" ADD CONSTRAINT "_RoleToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CartToDevice" ADD CONSTRAINT "_CartToDevice_A_fkey" FOREIGN KEY ("A") REFERENCES "Cart"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_DeviceToUser" ADD CONSTRAINT "_DeviceToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Device"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CartToDevice" ADD CONSTRAINT "_CartToDevice_B_fkey" FOREIGN KEY ("B") REFERENCES "Device"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_DeviceToUser" ADD CONSTRAINT "_DeviceToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_DeviceToInfo" ADD CONSTRAINT "_DeviceToInfo_A_fkey" FOREIGN KEY ("A") REFERENCES "Device"("id") ON DELETE CASCADE ON UPDATE CASCADE;
