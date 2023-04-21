@@ -1,10 +1,11 @@
 import { IBaseQuery } from '@/common/types/Query.types'
 import { Prisma } from '@prisma/client'
 
-export interface IDeviceQuery extends IBaseQuery {
-	category: string
-	isOnlyCash?: Prisma.NestedIntFilter
-	isStock?: Prisma.NestedIntFilter
+export interface IDeviceWhereQuery extends IBaseQuery {
+	categoryId: string
+	count?: Prisma.NestedIntFilter
+	stock?: Prisma.NestedIntFilter
 	price?: Prisma.NestedIntFilter
-	brand?: string
+	brand?: any[]
+	include?: Prisma.DeviceInclude
 }

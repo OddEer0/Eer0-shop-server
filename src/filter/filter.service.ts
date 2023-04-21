@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateFilterDto } from './dto/createFilter.dto'
+import { FILTER_NOT_FOUND } from './filter.const'
 
 @Injectable()
 export class FilterService {
@@ -21,5 +22,16 @@ export class FilterService {
 
 	async getFiltersByCategoryId(id: string) {
 		return await this.prismaService.filter.findMany({ where: { categoryId: id }, include: { infos: true } })
+	}
+
+	async deleteFilter(id: string) {
+		const isHave = await this.prismaService.filter.findUnique({ where: { id } })
+
+		if (!isHave) {
+			throw new NotFoundException(FILTER_NOT_FOUND)
+		}
+
+		await this.prismaService.filter.delete({ where: { id } })
+		return 'Удалено'
 	}
 }

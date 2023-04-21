@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { BanUserDto } from './dto/banUser.dto'
 import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { AddRoleDto } from './dto/addRole.dto'
+import { TransformGetAllUsersPipe } from './pipes/TransformGetAllUsers.pipe'
+import { Prisma } from '@prisma/client'
 
 @Controller('users')
 export class UsersController {
@@ -15,8 +16,8 @@ export class UsersController {
 
 	@Roles(RoleEnum.admin, RoleEnum.developer)
 	@Get()
-	getAllUsers() {
-		return this.usersService.getAll()
+	getAllUsers(@Query(TransformGetAllUsersPipe) query: Prisma.UserFindManyArgs) {
+		return this.usersService.getAll(query)
 	}
 
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)

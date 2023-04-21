@@ -1,5 +1,4 @@
 import { ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common'
-import { CreateUserDto } from 'src/users/dto/createUser.dto'
 import { UsersService } from 'src/users/users.service'
 import * as bcrypt from 'bcrypt'
 import * as uuid from 'uuid'
@@ -8,12 +7,13 @@ import { AuthLoginDto } from './dto/authLogin.dto'
 import { EMAIL_OR_PASSWORD_INCORRECT, USER_EXISTS } from './auth.const'
 import { PureUserDto } from '../common/dtos/user/pureUser.dto'
 import { UNAUTHORIZED } from '@/common/constants/status'
+import { AuthRegistrationDto } from './dto/authRegistration.dto'
 
 @Injectable()
 export class AuthService {
 	constructor(private usersService: UsersService, private tokenService: TokenService) {}
 
-	async registration(userDto: CreateUserDto) {
+	async registration(userDto: AuthRegistrationDto) {
 		const candidate = await this.usersService.getUserByNickname(userDto.nickname)
 		if (candidate) {
 			throw new HttpException(USER_EXISTS, HttpStatus.BAD_REQUEST)
