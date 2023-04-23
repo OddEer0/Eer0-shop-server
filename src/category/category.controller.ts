@@ -12,22 +12,22 @@ export class CategoryController {
 	@Roles(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator, RoleEnum.employee)
 	@Post()
 	createCategory(@Body() categoryDto: CreateCategoryDto) {
-		return this.categoryService.createCategory(categoryDto)
+		return this.categoryService.create(categoryDto)
 	}
 
 	@Get()
 	getAllCategory() {
-		return this.categoryService.getAllCategory()
+		return this.categoryService.getAll()
 	}
 
 	@Get(':id')
 	getOneCategory(@Param('id') id: string) {
-		return this.categoryService.getCategoryById(id)
+		return this.categoryService.getOne(id)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator, RoleEnum.employee)
 	@Put(':id')
 	updateCategory(@Param('id') id: string, @Body() updateDto: UpdateCategoryDto) {
-		return this.categoryService.updateCategory(id, updateDto)
+		return this.categoryService.update(id, updateDto)
 	}
 }

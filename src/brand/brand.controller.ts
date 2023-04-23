@@ -8,17 +8,17 @@ export class BrandController {
 
 	@Get()
 	async getAllBrand() {
-		return this.brandService.getAllBrand()
+		return this.brandService.getAll()
 	}
 
 	@Get(':id')
 	async getBrandById(@Param('id') id: string) {
-		return this.brandService.getBrandById(id)
+		return this.brandService.getOne(id)
 	}
 
 	@Post()
 	async createBrand(@Body() brandDto: CreateBrandDto) {
-		return this.brandService.createBrand(brandDto)
+		return this.brandService.create(brandDto)
 	}
 
 	@Get('/category/:id')

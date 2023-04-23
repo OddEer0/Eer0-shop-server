@@ -21,7 +21,7 @@ export class CartService {
 			select: { cart: { include: { device: true } } }
 		})
 
-		return cart?.cart
+		return cart.cart
 	}
 
 	async getCartDeviceById(id: string) {

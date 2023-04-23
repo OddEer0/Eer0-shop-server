@@ -11,12 +11,12 @@ export class InfoController {
 	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Post()
 	createInfo(@Body() infoDto: CreateInfoDto) {
-		return this.infoService.createInfo(infoDto)
+		return this.infoService.create(infoDto)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Get()
 	getAllInfo() {
-		return this.infoService.getAllInfo()
+		return this.infoService.getAll()
 	}
 }

@@ -1,10 +1,11 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { BrandService } from 'src/brand/brand.service'
 import { CategoryService } from 'src/category/category.service'
 import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Prisma } from '@prisma/client'
+import { DEVICE_NOT_FOUND } from './device.const'
 
 @Injectable()
 export class DeviceService {
@@ -15,8 +16,8 @@ export class DeviceService {
 		private infoService: InfoService
 	) {}
 
-	async createDevice(dto: CreateDeviceDto) {
-		const brand = await this.brandService.getBrandById(dto.brandId)
+	async create(dto: CreateDeviceDto) {
+		const brand = await this.brandService.getOne(dto.brandId)
 		const category = await this.categoryService.getCategoryById(dto.categoryId)
 
 		if (!brand || !category) {
@@ -28,13 +29,8 @@ export class DeviceService {
 		const connectOrCreate = []
 
 		for await (const info of dto.infos) {
-			const infoData = await this.infoService.getInfoByFilterIdAndValue(info.filterId, info.value)
-			if (infoData) {
-				connectOrCreate.push({ id: infoData.id })
-			} else {
-				const newInfo = await this.infoService.createInfo(info)
-				connectOrCreate.push({ id: newInfo.id })
-			}
+			const infoData = await this.infoService.getOrCreate(info)
+			connectOrCreate.push({ id: infoData.id })
 		}
 
 		console.log(connectOrCreate)
@@ -51,7 +47,7 @@ export class DeviceService {
 		return device
 	}
 
-	async getFilteredAndSortDevice(args: Prisma.DeviceFindManyArgs) {
+	async getSortAndFiltered(args: Prisma.DeviceFindManyArgs) {
 		const deviceCount = await this.prismaService.device.count({ where: { ...args.where } })
 		const devices = await this.prismaService.device.findMany({ ...args })
 
@@ -61,49 +57,17 @@ export class DeviceService {
 		}
 	}
 
-	private queryToOrInfoArray(name: string, value: string) {
-		const arr = []
-		value.split(',').forEach(val => {
-			arr.push({ name, value: val })
-		})
-		return arr
-	}
-
-	private brandQueryToOrArray(value: string) {
-		if (!value) return
-		const arr = []
-		value.split(',').forEach(val => {
-			arr.push({ brand: { name: val } })
-		})
-
-		if (arr.length) {
-			return arr
-		}
-		return
-	}
-
-	private queriesToAndArray(query: any) {
-		const entries = Object.entries<string>(query)
-		const andArray = []
-
-		entries.forEach(entry => {
-			const orArray = this.queryToOrInfoArray(...entry)
-			andArray.push({ infos: { some: { OR: orArray } } })
-		})
-
-		return andArray
-	}
-
-	async deleteDevice(id: string) {
+	async deleteOne(id: string) {
 		await this.prismaService.device.delete({ where: { id } })
 		return 'Девайс с ' + id + 'удалён'
 	}
 
-	async getDeviceById(id: string, withInfo?: boolean, withCount?: boolean) {
-		const device = await this.prismaService.device.findUnique({
-			where: { id },
-			include: { infos: withInfo, _count: { select: { comment: withCount } } }
-		})
+	async getOne(id: string, include?: Prisma.DeviceInclude) {
+		const device = await this.prismaService.device.findUnique({ where: { id }, include })
+
+		if (!device) {
+			throw new NotFoundException(DEVICE_NOT_FOUND)
+		}
 
 		return device
 	}

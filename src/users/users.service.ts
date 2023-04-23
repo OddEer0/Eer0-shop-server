@@ -8,7 +8,6 @@ import { FilesService } from 'src/files/files.service'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { BanUserDto } from './dto/banUser.dto'
 import { USER_OR_ROLE_NOT_FOUND } from './user.const'
-import { ITransformBaseQueryPipe } from '@/common/pipes/transformBaseQuery.pipe'
 import { Prisma } from '@prisma/client'
 
 @Injectable()

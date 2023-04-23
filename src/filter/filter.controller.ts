@@ -13,19 +13,19 @@ export class FilterController {
 	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Get()
 	getAllFilter() {
-		return this.filterService.getAllFilter()
+		return this.filterService.getAll()
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Post()
 	createFilter(@Body() filterDto: CreateFilterDto) {
-		return this.filterService.createFilter(filterDto)
+		return this.filterService.create(filterDto)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.employee, RoleEnum.moderator, RoleEnum.developer)
 	@Get(':id')
 	getFilterById(@Param('id') id: string) {
-		return this.filterService.getFilterById(id)
+		return this.filterService.getOne(id)
 	}
 
 	@Get('/category/:id')
@@ -35,6 +35,6 @@ export class FilterController {
 
 	@Delete(':id')
 	deleteFilter(@Param('id') id: string) {
-		return this.filterService.deleteFilter(id)
+		return this.filterService.delete(id)
 	}
 }
