@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
 import { CreateFilterDto } from './dto/createFilter.dto'
 import { FilterService } from './filter.service'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
+import { TransformBaseQueryPipe } from '@/common/pipes/transformBaseQuery.pipe'
+import { TransformBaseQueryDto } from '@/common/dtos/transformBaseQuery.dto'
 
 @Controller('filter')
 export class FilterController {
@@ -27,7 +29,12 @@ export class FilterController {
 	}
 
 	@Get('/category/:id')
-	getFilterByCategoryId(@Param('id') id: string) {
+	getFiltersByCategoryId(@Param('id') id: string) {
 		return this.filterService.getFiltersByCategoryId(id)
+	}
+
+	@Delete(':id')
+	deleteFilter(@Param('id') id: string) {
+		return this.filterService.deleteFilter(id)
 	}
 }

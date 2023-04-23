@@ -23,9 +23,7 @@ export class CreateDeviceDto {
 	@IsNumber({}, { message: TypeValidation.IS_NUMBER })
 	readonly count: number
 
-	@IsNumber({}, { message: TypeValidation.IS_NUMBER })
-	readonly rate: number
-
+	@IsString({ each: true, message: TypeValidation.IS_STRING_ARRAY })
 	readonly images: string[]
 
 	@IsString({ message: TypeValidation.IS_STRING })

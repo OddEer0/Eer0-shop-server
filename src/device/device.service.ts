@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common'
 import { BrandService } from 'src/brand/brand.service'
 import { CategoryService } from 'src/category/category.service'
 import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
-import { IDeviceQuery } from './types/Query.types'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class DeviceService {
@@ -51,44 +51,13 @@ export class DeviceService {
 		return device
 	}
 
-	async getFilteredAndSortDevice(baseSortParam: IDeviceQuery, otherFilterParam) {
-		const orArray = this.brandQueryToOrArray(baseSortParam.brand)
-
-		const andArray = this.queriesToAndArray(otherFilterParam)
-
-		const deviceCount = await this.prismaService.device.count({
-			where: {
-				categoryId: baseSortParam.category,
-				count: baseSortParam.isOnlyCash,
-				stock: baseSortParam.isStock,
-				price: baseSortParam.price,
-				AND: andArray,
-				OR: orArray
-			}
-		})
-
-		const pageCount = Math.ceil(deviceCount / baseSortParam.limit)
-
-		const devices = await this.prismaService.device.findMany({
-			take: baseSortParam.limit,
-			skip: (baseSortParam.page - 1) * baseSortParam.limit,
-			orderBy: {
-				[baseSortParam.sortBy]: baseSortParam.order
-			},
-			where: {
-				categoryId: baseSortParam.category,
-				count: baseSortParam.isOnlyCash,
-				stock: baseSortParam.isStock,
-				price: baseSortParam.price,
-				AND: andArray,
-				OR: orArray
-			},
-			include: { infos: true }
-		})
+	async getFilteredAndSortDevice(args: Prisma.DeviceFindManyArgs) {
+		const deviceCount = await this.prismaService.device.count({ where: { ...args.where } })
+		const devices = await this.prismaService.device.findMany({ ...args })
 
 		return {
 			devices,
-			pageCount
+			pageCount: Math.ceil(deviceCount / args.take)
 		}
 	}
 

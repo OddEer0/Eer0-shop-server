@@ -7,8 +7,9 @@ import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { BanUserDto } from './dto/banUser.dto'
-import { CartService } from 'src/cart/cart.service'
 import { USER_OR_ROLE_NOT_FOUND } from './user.const'
+import { ITransformBaseQueryPipe } from '@/common/pipes/transformBaseQuery.pipe'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
@@ -16,17 +17,15 @@ export class UsersService {
 		private prismaService: PrismaService,
 		private rolesService: RolesService,
 		private tokenService: TokenService,
-		private filesService: FilesService,
-		private cartService: CartService
+		private filesService: FilesService
 	) {}
 
 	async createUser(dto: CreateUserDto) {
-		const role = await this.rolesService.getRolesByValue('USER')
+		const role = await this.rolesService.getRolesByValue('ADMIN')
 		const user = await this.prismaService.user.create({
 			data: { ...dto, roles: { connect: { id: role.id } } },
 			include: { roles: { select: { value: true } } }
 		})
-		await this.cartService.createCart(user.id)
 
 		return user
 	}
@@ -40,9 +39,9 @@ export class UsersService {
 		return user
 	}
 
-	async getAll() {
+	async getAll(query: Prisma.UserFindManyArgs) {
 		return await this.prismaService.user.findMany({
-			include: { roles: { select: { value: true, description: true } }, cart: { include: { devices: true } } }
+			...query
 		})
 	}
 
@@ -61,17 +60,15 @@ export class UsersService {
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: PureUserDto) {
+	async updateUser(id: string, dto: DirtyUserDto) {
 		const user = await this.prismaService.user.findUnique({ where: { id } })
 
 		if (!user) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
-		const dirtyUser = new DirtyUserDto(dto)
-
 		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...dirtyUser },
+			data: { ...user, ...dto },
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})

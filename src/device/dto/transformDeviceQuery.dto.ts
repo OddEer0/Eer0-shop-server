@@ -1,21 +1,23 @@
-import { TransformBaseQueryDto } from '@/common/dtos/transformBaseQuery.dto'
 import { Prisma } from '@prisma/client'
-import { IDeviceQuery } from '../types/Query.types'
+import { BadRequestException } from '@nestjs/common'
 
 export class TransformDeviceQueryDto {
-	base: IDeviceQuery
+	base: Prisma.DeviceWhereInput
 	other: any
 
 	constructor(queryObj: any) {
-		const query = new TransformBaseQueryDto(queryObj, { sortBy: 'rate' })
-		const { category, isOnlyCash, isStock, minprice, maxprice, brand, ...other } = query.other
-		this.base = query.base as IDeviceQuery
+		const { category, isOnlyCash, isStock, minprice, maxprice, ...other } = queryObj
 
-		this.base.category = category
-		this.base.isOnlyCash = isOnlyCash ? {} : { gt: 0 }
-		this.base.isStock = isStock ? { gt: 0 } : {}
+		if (Array.isArray(category)) {
+			throw new BadRequestException()
+		}
+
+		this.base = {}
+
+		this.base.categoryId = category
+		this.base.count = isOnlyCash ? {} : { gt: 0 }
+		this.base.stock = isStock ? { gt: 0 } : {}
 		this.base.price = this.transformPrice(minprice, maxprice)
-		this.base.brand = brand
 
 		this.other = other
 	}
@@ -23,10 +25,13 @@ export class TransformDeviceQueryDto {
 	private transformPrice(min: string, max: string) {
 		const priceFilter = {} as Prisma.NestedIntFilter
 
-		if (min) {
+		const $min = +min
+		const $max = +max
+
+		if ($min) {
 			priceFilter.gt = +min
 		}
-		if (max) {
+		if ($max) {
 			priceFilter.lt = +max
 		}
 

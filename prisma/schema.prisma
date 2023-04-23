@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  id             String    @id() @default(uuid())
-  email          String    @unique
-  nickname       String    @unique
+  id             String     @id() @default(uuid())
+  email          String     @unique
+  nickname       String     @unique
   avatar         String?
   password       String
   firstName      String
@@ -18,28 +18,57 @@ model User {
   subTitle       String?   
   birthday       DateTime?
   activationLink String
-  isActivate     Boolean   @default(false)
-  isBanned       Boolean   @default(false)
+  isActivate     Boolean    @default(false)
+  isBanned       Boolean    @default(false)
   banReason      String?
-  cart           Cart?
+  cart           CartDevice[]
+  purchases      PurchaseDevice[]
+  bookings       BookingsDevice[]
+  refounds       Refound[]
+  addRates       Device[]
   comments       Comment[]
   roles          Role[]
   token          Token?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-}
-
-model Cart {
-  user         User    @relation(fields: [userId], references: [id])
-  userId       String  @id()
-  devices      CartDevice[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 model CartDevice {
   id           String @id() @default(uuid())
   count        Int
-  cart         Cart   @relation(fields: [cartId], references: [userId])
-  cartId       String  
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device @relation(fields: [deviceId], references: [id])
+  deviceId     String
+}
+
+model PurchaseDevice {
+  id           String @id() @default(uuid())
+  count        Int
+  stock        Int
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device @relation(fields: [deviceId], references: [id])
+  deviceId     String
+}
+
+model BookingsDevice {
+  id           String @id() @default(uuid())
+  count        Int
+  stock        Int
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device @relation(fields: [deviceId], references: [id])
+  deviceId     String
+}
+
+model Refound {
+  id           String @id() @default(uuid())
+  count        Int
+  price        Int
+  stock        Int
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
   device       Device @relation(fields: [deviceId], references: [id])
   deviceId     String
 }
@@ -65,9 +94,12 @@ model Device {
   stock        Int
   stockPercent Int
   count        Int
-  rate         Int
+  rate         User[]
   images       String[]
   carts        CartDevice[]
+  purchases    PurchaseDevice[]
+  bookings     BookingsDevice[]
+  refounds     Refound[]
   comment      Comment[]
   brand        Brand     @relation(fields: [brandId], references: [id])
   brandId      String  

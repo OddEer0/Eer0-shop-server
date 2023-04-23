@@ -5,12 +5,11 @@ import { InfoModule } from 'src/info/info.module'
 import { PrismaModule } from 'src/prisma/prisma.module'
 import { DeviceController } from './device.controller'
 import { DeviceService } from './device.service'
-import { CartModule } from 'src/cart/cart.module'
 
 @Module({
 	controllers: [DeviceController],
 	providers: [DeviceService],
-	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule, forwardRef(() => CartModule)],
+	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule],
 	exports: [DeviceService]
 })
 export class DeviceModule {}

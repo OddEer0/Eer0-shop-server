@@ -6,12 +6,11 @@ import { UsersController } from './users.controller'
 import { UsersService } from './users.service'
 import { PrismaModule } from 'src/prisma/prisma.module'
 import { FilesModule } from 'src/files/files.module'
-import { CartModule } from 'src/cart/cart.module'
 
 @Module({
 	controllers: [UsersController],
 	providers: [UsersService, JwtStrategy],
-	imports: [PrismaModule, RolesModule, TokenModule, FilesModule, CartModule],
+	imports: [PrismaModule, RolesModule, TokenModule, FilesModule],
 	exports: [UsersService]
 })
 export class UsersModule {}

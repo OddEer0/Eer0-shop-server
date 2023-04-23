@@ -9,7 +9,6 @@ import { AddRoleDto } from '../users/dto/addRole.dto'
 export class RolesController {
 	constructor(private roleService: RolesService) {}
 
-	@Roles(RoleEnum.admin, RoleEnum.developer)
 	@Post()
 	createRole(@Body() dto: CreateRoleDto) {
 		return this.roleService.createRole(dto)

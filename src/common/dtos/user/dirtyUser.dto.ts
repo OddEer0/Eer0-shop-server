@@ -1,21 +1,33 @@
-export class DirtyUserDto {
-	readonly id: string
-	readonly nickname: string
-	readonly email: string
-	readonly avatar: null | string
-	readonly firstName: string
-	readonly lastName: string
-	readonly birthday: null | Date
-	readonly subTitle: null | string
+import { TypeValidation } from '@/common/constants/validation'
+import { Transform } from 'class-transformer'
+import { IsDate, IsString, ValidateIf } from 'class-validator'
 
-	constructor(data) {
-		this.id = data.id
-		this.nickname = data.nickname
-		this.email = data.email
-		this.avatar = data.avatar
-		this.firstName = data.firstName
-		this.lastName = data.lastName
-		this.birthday = typeof data.birthday === 'number' ? new Date(data.birthday) : data.birthday
-		this.subTitle = data.subTitle
-	}
+export class DirtyUserDto {
+	@IsString({ message: TypeValidation.IS_STRING })
+	readonly id: string
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	readonly nickname: string
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	readonly email: string
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	@ValidateIf((obj, value) => value !== null)
+	readonly avatar: null | string
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	readonly firstName: string
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	readonly lastName: string
+
+	@IsDate({ message: TypeValidation.IS_DATE })
+	@ValidateIf((obj, value) => value !== null)
+	@Transform(({ value }) => (typeof value === 'number' ? new Date(value) : value))
+	readonly birthday: null | Date
+
+	@IsString({ message: TypeValidation.IS_STRING })
+	@ValidateIf((obj, value) => value !== null)
+	readonly subTitle: null | string
 }

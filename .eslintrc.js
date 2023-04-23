@@ -26,8 +26,9 @@ module.exports = {
 		'no-underscore-dangle': 'off',
 		'class-methods-use-this': 'off',
 		'prefer-destructuring': 'off',
+		'no-console': 'warn',
 		'@typescript-eslint/indent': 'off',
 		'@typescript-eslint/comma-dangle': 'off',
 		'@typescript-eslint/lines-between-class-members': 'off'
 	}
-};
+}

@@ -1,18 +1,18 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
-import { CreateUserDto } from 'src/users/dto/createUser.dto'
 import { AuthService } from './auth.service'
 import { AuthLoginDto } from './dto/authLogin.dto'
 import { Response } from 'express'
 import { Request } from 'express'
 import { ITokens } from '@/common/types/ITokens'
 import { ACCESS_TOKEN_TIME, REFRESH_TOKEN_TIME } from './auth.const'
+import { AuthRegistrationDto } from './dto/authRegistration.dto'
 
 @Controller('auth')
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
 	@Post('/registration')
-	async registration(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res: Response) {
+	async registration(@Body() userDto: AuthRegistrationDto, @Res({ passthrough: true }) res: Response) {
 		try {
 			const userData = await this.authService.registration(userDto)
 			this.setTokens(res, userData.tokens)

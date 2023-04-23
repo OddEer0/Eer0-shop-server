@@ -4,7 +4,7 @@ import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { TransformDeviceQueryPipe } from './pipes/transformDeviceQuery.pipes'
-import { TransformDeviceQueryDto } from './dto/transformDeviceQuery.dto'
+import { Prisma } from '@prisma/client'
 
 @Controller('device')
 export class DeviceController {
@@ -17,8 +17,8 @@ export class DeviceController {
 	}
 
 	@Get()
-	getFilteredAndSortedDevice(@Query(new TransformDeviceQueryPipe()) query: TransformDeviceQueryDto) {
-		return this.deviceService.getFilteredAndSortDevice(query.base, query.other)
+	getFilteredAndSortedDevice(@Query(TransformDeviceQueryPipe) query: Prisma.DeviceFindManyArgs) {
+		return this.deviceService.getFilteredAndSortDevice(query)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer, RoleEnum.employee, RoleEnum.moderator)
