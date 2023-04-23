@@ -1,5 +1,5 @@
 import { PrismaService } from './../prisma/prisma.service'
-import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { RolesService } from 'src/roles/roles.service'
 import { TokenService } from 'src/token/token.service'
 import { CreateUserDto } from './dto/createUser.dto'
@@ -7,7 +7,7 @@ import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
 import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
 import { BanUserDto } from './dto/banUser.dto'
-import { USER_OR_ROLE_NOT_FOUND } from './user.const'
+import { USER_EXISTS, USER_NOT_FOUND, USER_OR_ROLE_NOT_FOUND } from './user.const'
 import { Prisma } from '@prisma/client'
 
 @Injectable()
@@ -19,8 +19,14 @@ export class UsersService {
 		private filesService: FilesService
 	) {}
 
-	async createUser(dto: CreateUserDto) {
+	async create(dto: CreateUserDto) {
+		const candidate = await this.getUserByNickname(dto.nickname)
+		if (candidate) {
+			throw new BadRequestException(USER_EXISTS)
+		}
+
 		const role = await this.rolesService.getRolesByValue('ADMIN')
+
 		const user = await this.prismaService.user.create({
 			data: { ...dto, roles: { connect: { id: role.id } } },
 			include: { roles: { select: { value: true } } }
@@ -44,6 +50,18 @@ export class UsersService {
 		})
 	}
 
+	async getOne(id: string) {
+		const user = await this.prismaService.user.findUnique({
+			where: { id },
+			include: { roles: { select: { value: true } } }
+		})
+		if (!user) {
+			throw new NotFoundException(USER_NOT_FOUND)
+		}
+
+		return user
+	}
+
 	async getUserById(id: string) {
 		const user = await this.prismaService.user.findUnique({
 			where: { id },
@@ -53,25 +71,24 @@ export class UsersService {
 		return user
 	}
 
-	async deleteUser(id: string) {
+	async delete(id: string) {
 		await this.tokenService.deleteTokenByUserId(id)
 		await this.prismaService.user.delete({ where: { id } })
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: DirtyUserDto) {
-		const user = await this.prismaService.user.findUnique({ where: { id } })
-
-		if (!user) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+	async update(id: string, dto: DirtyUserDto) {
+		const candidate = await this.prismaService.user.findUnique({ where: { id } })
+		if (!candidate) {
+			throw new NotFoundException(USER_NOT_FOUND)
 		}
 
-		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...dto },
+		const user = await this.prismaService.user.update({
+			data: dto,
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
-		return new PureUserDto(newUser)
+		return new PureUserDto(user)
 	}
 
 	async addUserAvatar(id: string, image: Express.Multer.File) {
@@ -135,6 +152,4 @@ export class UsersService {
 
 		return await this.prismaService.user.update({ where: { id }, data: { roles: { connect: { id: role.id } } } })
 	}
-
-	async addDeviceToCart() {}
 }

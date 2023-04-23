@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateBrandDto } from './dto/createBrand.dto'
-import { BRAND_IS_HAVE, BRAND_NOT_FOUND } from './brand.const'
+import { BRAND_EXISTS, BRAND_NOT_FOUND } from './brand.const'
 
 @Injectable()
 export class BrandService {
@@ -10,7 +10,7 @@ export class BrandService {
 	async create(dto: CreateBrandDto) {
 		const candidate = await this.prismaService.brand.findUnique({ where: { name: dto.name } })
 		if (candidate) {
-			throw new BadRequestException(BRAND_IS_HAVE)
+			throw new BadRequestException(BRAND_EXISTS)
 		}
 
 		return await this.prismaService.brand.create({ data: dto })

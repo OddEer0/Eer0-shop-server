@@ -1,7 +1,7 @@
 import { PrismaService } from './../prisma/prisma.service'
 import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateRoleDto } from './dto/createRoleDto'
-import { ROLE_IS_HAVE, ROLE_NOT_FOUND } from './roles.const'
+import { ROLE_EXISTS, ROLE_NOT_FOUND } from './roles.const'
 
 @Injectable()
 export class RolesService {
@@ -10,7 +10,7 @@ export class RolesService {
 	async create(dto: CreateRoleDto) {
 		const candidate = await this.prismaService.role.findUnique({ where: { value: dto.value } })
 		if (candidate) {
-			throw new BadRequestException(ROLE_IS_HAVE)
+			throw new BadRequestException(ROLE_EXISTS)
 		}
 		return await this.prismaService.role.create({ data: dto })
 	}

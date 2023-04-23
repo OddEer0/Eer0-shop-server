@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateFilterDto } from './dto/createFilter.dto'
-import { FILTER_IS_HAVE, FILTER_NOT_FOUND } from './filter.const'
+import { FILTER_EXISTS, FILTER_NOT_FOUND } from './filter.const'
 
 @Injectable()
 export class FilterService {
@@ -29,7 +29,7 @@ export class FilterService {
 			where: { categoryId: dto.categoryId, name: dto.name }
 		})
 		if (candidate) {
-			throw new BadRequestException(FILTER_IS_HAVE)
+			throw new BadRequestException(FILTER_EXISTS)
 		}
 
 		return await this.prismaService.filter.create({ data: dto })

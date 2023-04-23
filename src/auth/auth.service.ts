@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { UsersService } from 'src/users/users.service'
 import * as bcrypt from 'bcrypt'
 import * as uuid from 'uuid'
 import { TokenService } from 'src/token/token.service'
 import { AuthLoginDto } from './dto/authLogin.dto'
-import { EMAIL_OR_PASSWORD_INCORRECT, USER_EXISTS } from './auth.const'
+import { EMAIL_OR_PASSWORD_INCORRECT } from './auth.const'
 import { PureUserDto } from '../common/dtos/user/pureUser.dto'
 import { UNAUTHORIZED } from '@/common/constants/status'
 import { AuthRegistrationDto } from './dto/authRegistration.dto'
@@ -14,15 +14,10 @@ export class AuthService {
 	constructor(private usersService: UsersService, private tokenService: TokenService) {}
 
 	async registration(userDto: AuthRegistrationDto) {
-		const candidate = await this.usersService.getUserByNickname(userDto.nickname)
-		if (candidate) {
-			throw new HttpException(USER_EXISTS, HttpStatus.BAD_REQUEST)
-		}
-
 		const hashPassword = await bcrypt.hash(userDto.password, 5)
 		const link: string = uuid.v4()
 
-		const user = await this.usersService.createUser({ ...userDto, password: hashPassword, activationLink: link })
+		const user = await this.usersService.create({ ...userDto, password: hashPassword, activationLink: link })
 
 		const tokens = this.tokenService.generateToken(user)
 		await this.tokenService.saveToken({ userId: user.id, refreshToken: tokens.refreshToken })

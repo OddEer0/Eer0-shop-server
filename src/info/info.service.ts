@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateInfoDto } from './dto/createInfo.dto'
-import { INFO_IS_HAVE, INFO_NOT_FOUND } from './info.const'
+import { INFO_EXISTS, INFO_NOT_FOUND } from './info.const'
 
 @Injectable()
 export class InfoService {
@@ -10,7 +10,7 @@ export class InfoService {
 	async create(dto: CreateInfoDto) {
 		const candidate = await this.prismaService.info.findFirst({ where: { filterId: dto.filterId, value: dto.value } })
 		if (candidate) {
-			throw new BadRequestException(INFO_IS_HAVE)
+			throw new BadRequestException(INFO_EXISTS)
 		}
 
 		return await this.prismaService.info.create({ data: dto })
