@@ -5,10 +5,10 @@ import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { BanUserDto } from './dto/banUser.dto'
-import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { AddRoleDto } from './dto/addRole.dto'
 import { TransformGetAllUsersPipe } from './pipes/TransformGetAllUsers.pipe'
 import { Prisma } from '@prisma/client'
+import { DirtyUserDto } from '@/common/dtos/user/dirtyUser.dto'
 
 @Controller('users')
 export class UsersController {
@@ -34,7 +34,7 @@ export class UsersController {
 
 	@RolesOrAuthor(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
 	@Put(':id')
-	updateUser(@Param('id') id: string, @Body() dto: PureUserDto) {
+	updateUser(@Param('id') id: string, @Body() dto: DirtyUserDto) {
 		return this.usersService.updateUser(id, dto)
 	}
 

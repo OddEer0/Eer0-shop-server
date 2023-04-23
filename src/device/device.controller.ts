@@ -18,7 +18,6 @@ export class DeviceController {
 
 	@Get()
 	getFilteredAndSortedDevice(@Query(TransformDeviceQueryPipe) query: Prisma.DeviceFindManyArgs) {
-		console.log(query)
 		return this.deviceService.getFilteredAndSortDevice(query)
 	}
 

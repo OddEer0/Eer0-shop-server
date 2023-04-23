@@ -37,38 +37,4 @@ export class TransformDeviceQueryDto {
 
 		return priceFilter
 	}
-
-	private validateInclude(include: string) {
-		if (Array.isArray(include)) {
-			throw new BadRequestException()
-		}
-		const keys = ['bookings', 'brand', 'carts', 'category', 'comment', 'infos', 'purchases', 'refound', 'rate']
-
-		const result = {} as Prisma.DeviceInclude
-
-		const includes = include.split(',')
-
-		includes.forEach(include => {
-			if (!keys.includes(include)) {
-				throw new BadRequestException()
-			}
-
-			result[include] = true
-		})
-
-		return result
-	}
-
-	private brandQueryToOrArray(value: string) {
-		if (!value) return
-		const arr = []
-		value.split(',').forEach(val => {
-			arr.push({ brand: { name: val } })
-		})
-
-		if (arr.length) {
-			return arr
-		}
-		return
-	}
 }

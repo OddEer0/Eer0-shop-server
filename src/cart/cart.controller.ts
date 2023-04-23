@@ -13,9 +13,9 @@ export class CartController {
 	constructor(private cartService: CartService) {}
 
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)
-	@Post('device')
-	addDeviceToCart(@Body() dto: AddDeviceToCartDto) {
-		return this.cartService.addDeviceToCart(dto.deviceId, dto.userId)
+	@Post('device/:id')
+	addDeviceToCart(@Body() dto: AddDeviceToCartDto, @Param('id') id: string) {
+		return this.cartService.addDeviceToCart(dto.deviceId, id)
 	}
 
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)

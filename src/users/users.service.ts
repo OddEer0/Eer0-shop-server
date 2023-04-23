@@ -60,17 +60,15 @@ export class UsersService {
 		return `Пользователь с id ${id} был удалён`
 	}
 
-	async updateUser(id: string, dto: PureUserDto) {
+	async updateUser(id: string, dto: DirtyUserDto) {
 		const user = await this.prismaService.user.findUnique({ where: { id } })
 
 		if (!user) {
 			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
 		}
 
-		const dirtyUser = new DirtyUserDto(dto)
-
 		const newUser = await this.prismaService.user.update({
-			data: { ...user, ...dirtyUser },
+			data: { ...user, ...dto },
 			where: { id },
 			include: { roles: { select: { value: true } } }
 		})
