@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { CreateInfoDto } from './dto/createInfo.dto'
 import { InfoService } from './info.service'
 import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
+import { ITransformBaseQueryPipe } from '@/common/pipes/transformBaseQuery.pipe'
+import { TransformGetByDeviceId } from './pipes/transformGetByDevice.pipe'
 
 @Controller('info')
 export class InfoController {
@@ -18,5 +20,14 @@ export class InfoController {
 	@Get()
 	getAllInfo() {
 		return this.infoService.getAll()
+	}
+
+	@Get('device/:id')
+	getInfoByDeviceId(
+		@Query(TransformGetByDeviceId)
+		query: ITransformBaseQueryPipe,
+		@Param('id') id: string
+	) {
+		return this.infoService.getByDeviceId(id, query)
 	}
 }

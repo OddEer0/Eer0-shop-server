@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateInfoDto } from './dto/createInfo.dto'
 import { INFO_EXISTS, INFO_NOT_FOUND } from './info.const'
+import { ITransformBaseQueryPipe } from '@/common/pipes/transformBaseQuery.pipe'
 
 @Injectable()
 export class InfoService {
@@ -36,5 +37,19 @@ export class InfoService {
 		}
 
 		return await this.prismaService.info.create({ data: dto })
+	}
+
+	async getByDeviceId(id: string, { base: { limit, page }, other }: ITransformBaseQueryPipe) {
+		if (other.all) {
+			return await this.prismaService.info.findMany({
+				where: { devices: { some: { id } } }
+			})
+		}
+
+		return await this.prismaService.info.findMany({
+			where: { devices: { some: { id } } },
+			take: limit,
+			skip: limit * (page - 1)
+		})
 	}
 }

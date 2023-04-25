@@ -5,7 +5,8 @@ import { InfoService } from 'src/info/info.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Prisma } from '@prisma/client'
-import { DEVICE_NOT_FOUND } from './device.const'
+import { DEVICE_EXISTS, DEVICE_NOT_FOUND } from './device.const'
+import { CATEGORY_NOT_FOUND } from 'src/category/category.const'
 
 @Injectable()
 export class DeviceService {
@@ -17,29 +18,33 @@ export class DeviceService {
 	) {}
 
 	async create(dto: CreateDeviceDto) {
+		const candidate = await this.prismaService.device.findUnique({ where: { name: dto.name } })
+
+		if (candidate) {
+			throw new NotFoundException(DEVICE_EXISTS)
+		}
+
 		const brand = await this.brandService.getOne(dto.brandId)
 		const category = await this.categoryService.getCategoryById(dto.categoryId)
 
-		if (!brand || !category) {
-			throw new ForbiddenException(HttpStatus.BAD_REQUEST)
+		if (!category) {
+			throw new NotFoundException(CATEGORY_NOT_FOUND)
 		}
 
 		await this.categoryService.addBrandToCategory(category.id, brand.id)
 
-		const connectOrCreate = []
+		const connect = []
 
 		for await (const info of dto.infos) {
 			const infoData = await this.infoService.getOrCreate(info)
-			connectOrCreate.push({ id: infoData.id })
+			connect.push({ id: infoData.id })
 		}
 
-		console.log(connectOrCreate)
-
-		const device = this.prismaService.device.create({
+		const device = await this.prismaService.device.create({
 			data: {
 				...dto,
 				infos: {
-					connect: connectOrCreate
+					connect: connect
 				}
 			}
 		})

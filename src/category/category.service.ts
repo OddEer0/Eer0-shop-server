@@ -46,10 +46,9 @@ export class CategoryService {
 	}
 
 	async getCategoryById(id: string) {
-		const category = await this.prismaService.category.findUnique({
+		return await this.prismaService.category.findUnique({
 			where: { id }
 		})
-		return category
 	}
 
 	async addBrandToCategory(categoryId: string, brandId: string) {
