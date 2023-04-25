@@ -11,18 +11,18 @@ export class RolesController {
 
 	@Post()
 	createRole(@Body() dto: CreateRoleDto) {
-		return this.roleService.createRole(dto)
+		return this.roleService.create(dto)
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer)
 	@Get()
 	getAllRole() {
-		return this.roleService.getAllRole()
+		return this.roleService.getAll()
 	}
 
 	@Roles(RoleEnum.admin, RoleEnum.developer)
 	@Delete(':id')
 	deleteRole(@Param('id') id: string) {
-		return this.roleService.deleteRole(id)
+		return this.roleService.delete(id)
 	}
 }

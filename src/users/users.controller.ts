@@ -23,19 +23,19 @@ export class UsersController {
 	@RolesOrAuthor(RoleEnum.admin, RoleEnum.developer, RoleEnum.moderator)
 	@Delete(':id')
 	deleteUser(@Param('id') id: string) {
-		return this.usersService.deleteUser(id)
+		return this.usersService.delete(id)
 	}
 
 	@Roles(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
 	@Get(':id')
 	getOneUser(@Param('id') id: string) {
-		return this.usersService.getUserById(id)
+		return this.usersService.getOne(id)
 	}
 
 	@RolesOrAuthor(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
 	@Put(':id')
 	updateUser(@Param('id') id: string, @Body() dto: DirtyUserDto) {
-		return this.usersService.updateUser(id, dto)
+		return this.usersService.update(id, dto)
 	}
 
 	@RolesOrAuthor(RoleEnum.moderator, RoleEnum.admin, RoleEnum.developer)
