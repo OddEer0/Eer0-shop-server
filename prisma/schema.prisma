@@ -144,8 +144,8 @@ model Comment {
   user        User     @relation(fields: [userId], references: [id])
   userId      String
   description String
-  like        Int
-  dislike     Int
+  like        Int      @default(0)
+  dislike     Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -76,4 +76,8 @@ export class DeviceService {
 
 		return device
 	}
+
+	async getDeviceById(id: string) {
+		return await this.prismaService.device.findUnique({ where: { id } })
+	}
 }
