@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Comment" ALTER COLUMN "like" SET DEFAULT 0,
+ALTER COLUMN "dislike" SET DEFAULT 0;
