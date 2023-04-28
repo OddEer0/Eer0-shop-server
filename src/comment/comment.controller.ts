@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common'
-import { CreateCommentDto } from './dto/createComment.dto'
+import { Body, Controller, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common'
+import { CreateCommentControllerDto } from './dto/createComment.dto'
 import { CommentService } from './comment.service'
 import { JwtAuthGuard } from '@/common/guards/jwtAuthGuard.guard'
 import { UpdateCommentDto } from './dto/updateComment.dto'
@@ -7,6 +7,8 @@ import { Roles } from '@/common/decorators/rolesAuth.decorator'
 import { RoleEnum } from '@/common/types/Roles'
 import { IBaseQuery } from '@/common/types/Query.types'
 import { TransformCommentByDeviceId } from './pipes/TransformCommentByDeviceId.pipe'
+import { User } from '@prisma/client'
+import { GetUser } from '@/common/decorators/user.decorator'
 
 @Controller('comment')
 export class CommentController {
@@ -14,8 +16,8 @@ export class CommentController {
 
 	@Post()
 	@UseGuards(JwtAuthGuard)
-	createComment(@Body() dto: CreateCommentDto) {
-		return this.commentService.create(dto)
+	createComment(@Body() dto: CreateCommentControllerDto, @GetUser() user: User) {
+		return this.commentService.create({ ...dto, userId: user.id })
 	}
 
 	@Get(':deviceId')
@@ -32,12 +34,17 @@ export class CommentController {
 	@Post('/like/:id')
 	@UseGuards(JwtAuthGuard)
 	likeComment(@Param('id') id: string) {
-		return this.likeComment(id)
+		return this.commentService.like(id)
 	}
 
-	@Post('/like/:id')
+	@Post('/dislike/:id')
 	@UseGuards(JwtAuthGuard)
 	dislikeComment(@Param('id') id: string) {
-		return this.dislikeComment(id)
+		return this.commentService.dislike(id)
+	}
+
+	@Get('one/:id')
+	getOne(@Param('id') id: string) {
+		return this.commentService.getOne(id)
 	}
 }

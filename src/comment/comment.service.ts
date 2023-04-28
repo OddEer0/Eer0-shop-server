@@ -58,7 +58,7 @@ export class CommentService {
 			throw new NotFoundException(COMMENT_NOT_FOUND)
 		}
 
-		return this.prismaService.comment.update({ where: { id }, data: { like: comment.dislike + 1 } })
+		return this.prismaService.comment.update({ where: { id }, data: { dislike: comment.dislike + 1 } })
 	}
 
 	async getByDeviceId(id: string, query: IBaseQuery) {
@@ -71,5 +71,15 @@ export class CommentService {
 			where: { deviceId: id },
 			include: { user: { select: { avatar: true, firstName: true, lastName: true } } }
 		})
+	}
+
+	async getOne(id: string) {
+		const comment = this.prismaService.comment.findUnique({ where: { id } })
+
+		if (!comment) {
+			throw new NotFoundException(COMMENT_NOT_FOUND)
+		}
+
+		return comment
 	}
 }
