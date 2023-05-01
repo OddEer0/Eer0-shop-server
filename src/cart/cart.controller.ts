@@ -1,5 +1,5 @@
 import { RoleEnum } from '@/common/types/Roles'
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common'
 import { AddDeviceToCartDto } from './dto/addDeviceToCart.dto'
 import { RolesOrAuthor } from '@/common/decorators/rolesOrAuthor.decorator'
 import { CartService } from './cart.service'
@@ -7,6 +7,9 @@ import { RemoveDeviceFromCartDto } from './dto/removeDeviceFromCart.dto'
 import { Request } from 'express'
 import { SetCountCartDevice } from './dto/setCountCartDevice.dto'
 import { CART_NOT_FOUND } from './cart.const'
+import { JwtAuthGuard } from '@/common/guards/jwtAuthGuard.guard'
+import { GetUser } from '@/common/decorators/user.decorator'
+import { User } from '@prisma/client'
 
 @Controller('cart')
 export class CartController {
@@ -28,7 +31,6 @@ export class CartController {
 	@Get(':id')
 	async getOneCart(@Param('id') id: string) {
 		const cart = await this.cartService.getCartByUserId(id)
-
 		if (!cart) {
 			throw new NotFoundException(CART_NOT_FOUND)
 		}
@@ -37,10 +39,19 @@ export class CartController {
 	}
 
 	@Get('/token/access')
-	getCartByToken(@Req() req: Request) {
-		const { accessToken } = req.cookies
+	@UseGuards(JwtAuthGuard)
+	getCart(@GetUser() user: User) {
+		const cart = this.cartService.getCartByUserId(user.id)
+		if (!cart) {
+			throw new NotFoundException(CART_NOT_FOUND)
+		}
 
-		return this.cartService.getCartByAccessToken(accessToken)
+		return cart
+	}
+
+	@Get('/token/access/:access')
+	getCartByToken(@Param('access') token: string) {
+		return this.cartService.getCartByAccessToken(token)
 	}
 
 	@RolesOrAuthor(RoleEnum.developer, RoleEnum.admin)
