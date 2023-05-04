@@ -8,7 +8,7 @@ import { BanUserDto } from './dto/banUser.dto'
 import { AddRoleDto } from './dto/addRole.dto'
 import { TransformGetAllUsersPipe } from './pipes/TransformGetAllUsers.pipe'
 import { Prisma } from '@prisma/client'
-import { DirtyUserDto } from '@/common/dtos/user/dirtyUser.dto'
+import { DirtyUserDto } from 'src/users/dto/dirtyUser.dto'
 
 @Controller('users')
 export class UsersController {
