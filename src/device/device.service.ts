@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { BrandService } from 'src/brand/brand.service'
 import { CategoryService } from 'src/category/category.service'
 import { InfoService } from 'src/info/info.service'
@@ -7,6 +7,9 @@ import { CreateDeviceDto } from './dto/createDevice.dto'
 import { Prisma } from '@prisma/client'
 import { DEVICE_EXISTS, DEVICE_NOT_FOUND } from './device.const'
 import { CATEGORY_NOT_FOUND } from 'src/category/category.const'
+import { BuyDeviceDto, BuyManyDeviceDto } from './dto/buyDevice.dto'
+import { UsersService } from 'src/users/users.service'
+import { BookingDeviceService } from 'src/booking-device/booking-device.service'
 
 @Injectable()
 export class DeviceService {
@@ -14,7 +17,9 @@ export class DeviceService {
 		private prismaService: PrismaService,
 		private brandService: BrandService,
 		private categoryService: CategoryService,
-		private infoService: InfoService
+		private infoService: InfoService,
+		private userService: UsersService,
+		private bookingDeviceService: BookingDeviceService
 	) {}
 
 	async create(dto: CreateDeviceDto) {
@@ -65,6 +70,27 @@ export class DeviceService {
 	async deleteOne(id: string) {
 		await this.prismaService.device.delete({ where: { id } })
 		return 'Девайс с ' + id + 'удалён'
+	}
+
+	async buy(dto: BuyDeviceDto) {
+		await this.userService.getOne(dto.userId)
+		await this.getOne(dto.deviceId)
+		await this.prismaService.device.update({ where: { id: dto.deviceId }, data: { count: { decrement: dto.count } } })
+
+		return await this.bookingDeviceService.create(dto)
+	}
+
+	async buyMany(dto: BuyManyDeviceDto[], userId: string) {
+		const newDto = dto.map(data => ({ ...data, userId }))
+
+		for await (const data of newDto) {
+			await this.prismaService.device.update({
+				where: { id: data.deviceId },
+				data: { count: { decrement: data.count } }
+			})
+		}
+
+		return this.bookingDeviceService.createMany(newDto)
 	}
 
 	async getOne(id: string, include?: Prisma.DeviceInclude) {

@@ -16,6 +16,9 @@ import { FilesModule } from './files/files.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import * as path from 'path'
 import { GlobalJwtModule } from './common/modules/globalJwt.module'
+import { PurchaseDeviceModule } from './purchase-device/purchase-device.module';
+import { BookingDeviceModule } from './booking-device/booking-device.module';
+import { RefoundsModule } from './refounds/refounds.module';
 
 @Module({
 	imports: [
@@ -36,7 +39,10 @@ import { GlobalJwtModule } from './common/modules/globalJwt.module'
 		CategoryModule,
 		FilterModule,
 		InfoModule,
-		FilesModule
+		FilesModule,
+		PurchaseDeviceModule,
+		BookingDeviceModule,
+		RefoundsModule
 	]
 })
 export class AppModule {}
