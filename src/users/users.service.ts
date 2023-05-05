@@ -3,12 +3,12 @@ import { BadRequestException, ForbiddenException, HttpStatus, Injectable, NotFou
 import { RolesService } from 'src/roles/roles.service'
 import { TokenService } from 'src/token/token.service'
 import { CreateUserDto } from './dto/createUser.dto'
-import { PureUserDto } from '@/common/dtos/user/pureUser.dto'
 import { FilesService } from 'src/files/files.service'
-import { DirtyUserDto } from '../common/dtos/user/dirtyUser.dto'
+import { DirtyUserDto } from './dto/dirtyUser.dto'
 import { BanUserDto } from './dto/banUser.dto'
 import { USER_EXISTS, USER_NOT_FOUND, USER_OR_ROLE_NOT_FOUND } from './user.const'
 import { Prisma } from '@prisma/client'
+import { PureUserDto } from './dto/pureUser.dto'
 
 @Injectable()
 export class UsersService {

@@ -6,7 +6,7 @@ export class TransformDeviceQueryDto {
 	other: any
 
 	constructor(queryObj: any) {
-		const { category, isOnlyCash, isStock, minprice, maxprice, ...other } = queryObj
+		const { category, isonlycash, isstock, minprice, maxprice, ...other } = queryObj
 
 		if (Array.isArray(category)) {
 			throw new BadRequestException()
@@ -15,8 +15,8 @@ export class TransformDeviceQueryDto {
 		this.base = {}
 
 		this.base.categoryId = category
-		this.base.count = isOnlyCash ? {} : { gt: 0 }
-		this.base.stock = isStock ? { gt: 0 } : {}
+		this.base.count = isonlycash ? {} : { gt: 0 }
+		this.base.stock = isstock ? { gt: 0 } : {}
 		this.base.price = this.transformPrice(minprice, maxprice)
 
 		this.other = other

@@ -5,9 +5,9 @@ import * as uuid from 'uuid'
 import { TokenService } from 'src/token/token.service'
 import { AuthLoginDto } from './dto/authLogin.dto'
 import { EMAIL_OR_PASSWORD_INCORRECT } from './auth.const'
-import { PureUserDto } from '../common/dtos/user/pureUser.dto'
 import { UNAUTHORIZED } from '@/common/constants/status'
 import { AuthRegistrationDto } from './dto/authRegistration.dto'
+import { PureUserDto } from 'src/users/dto/pureUser.dto'
 
 @Injectable()
 export class AuthService {
