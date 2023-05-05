@@ -90,7 +90,7 @@ export class DeviceService {
 			})
 		}
 
-		return this.bookingDeviceService.createMany(newDto)
+		return await this.bookingDeviceService.createMany(newDto)
 	}
 
 	async getOne(id: string, include?: Prisma.DeviceInclude) {
