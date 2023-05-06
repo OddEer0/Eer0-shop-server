@@ -15,8 +15,10 @@ export class TransformDeviceQueryPipe implements PipeTransform {
 			maxLimit: 100,
 			minLimit: 10,
 			sortBy: 'createdAt',
-			sortByValidFields: ['createdAt']
+			order: 'desc',
+			sortByValidFields: ['createdAt', 'price']
 		})
+
 		const where = new TransformDeviceQueryDto(value)
 		const newOther = {}
 		const result = {} as Prisma.DeviceFindManyArgs
