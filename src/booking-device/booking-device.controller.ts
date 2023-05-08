@@ -25,4 +25,10 @@ export class BookingDeviceController {
 	approveAllBookingsDevices(@GetUser() user: User) {
 		return this.bookingDeviceService.approveAll(user.id)
 	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post('refound/:id')
+	refoundBookingDevice(@GetUser() user: User, @Param('id') id: string) {
+		return this.bookingDeviceService.refound(id, user.id)
+	}
 }

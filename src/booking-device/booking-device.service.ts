@@ -11,7 +11,10 @@ export class BookingDeviceService {
 
 	async getByUserId(userId) {
 		await this.userService.getOne(userId)
-		return this.prismaService.bookingsDevice.findMany({ where: { userId } })
+		return this.prismaService.bookingsDevice.findMany({
+			where: { userId },
+			select: { device: true, id: true, count: true, deviceId: true, userId: true }
+		})
 	}
 
 	async create(dto: CreateBookingDeviceDto) {
@@ -37,19 +40,21 @@ export class BookingDeviceService {
 
 	async approve(id: string, userId: string) {
 		const bookingDevice = await this.getById(id)
-		if (!id) {
+		if (!bookingDevice) {
 			throw new NotFoundException(BOOKING_DEVICE_EXISTS)
 		}
 		if (bookingDevice.userId !== userId) {
 			throw new ForbiddenException(BOOKING_DEVICE_ROLE)
 		}
 
+		await this.delete(id)
 		return await this.prismaService.purchaseDevice.create({
 			data: {
 				count: bookingDevice.count,
 				userId,
 				deviceId: bookingDevice.deviceId
-			}
+			},
+			select: { count: true, device: true, userId: true, id: true, deviceId: true }
 		})
 	}
 
@@ -65,9 +70,22 @@ export class BookingDeviceService {
 
 	async delete(id: string) {
 		const candidate = await this.getById(id)
-		if (candidate) {
+		if (!candidate) {
 			throw new NotFoundException(BOOKING_DEVICE_EXISTS)
 		}
 		await this.prismaService.bookingsDevice.delete({ where: { id } })
+	}
+
+	async refound(id: string, userId: string) {
+		const bookingDevice = await this.getById(id)
+		if (!bookingDevice) {
+			throw new NotFoundException(BOOKING_DEVICE_EXISTS)
+		}
+		if (bookingDevice.userId !== userId) {
+			throw new ForbiddenException(BOOKING_DEVICE_ROLE)
+		}
+
+		await this.delete(id)
+		return this.prismaService.refound.create({ data: bookingDevice })
 	}
 }

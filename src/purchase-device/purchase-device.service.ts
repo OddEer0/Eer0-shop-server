@@ -22,7 +22,10 @@ export class PurchaseDeviceService {
 			throw new NotFoundException(USER_NOT_FOUND)
 		}
 
-		return await this.prismaService.purchaseDevice.findMany({ where: { userId: id } })
+		return await this.prismaService.purchaseDevice.findMany({
+			where: { userId: id },
+			select: { id: true, device: true, count: true, deviceId: true, userId: true }
+		})
 	}
 
 	async create(dto: CreatePurchaseDeviceDto) {

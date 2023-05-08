@@ -1,5 +1,4 @@
 import { convertDaysToMs, convertHoursToMs } from '@/common/helpers/time'
 
 export const EMAIL_OR_PASSWORD_INCORRECT = 'Не верный логин или пароль!'
-export const ACCESS_TOKEN_TIME = convertHoursToMs(1)
-export const REFRESH_TOKEN_TIME = convertDaysToMs(30)
+export const TOKEN_TIME = convertDaysToMs(30)

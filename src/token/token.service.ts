@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt/dist'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { SaveTokenDto } from './dto/saveToken.dto'
 import { IJwtUserPayload } from '@/common/types/jwt.types'
+import { GenerateTokenDto } from './dto/generateToken.dto'
 
 @Injectable()
 export class TokenService {
@@ -13,8 +14,8 @@ export class TokenService {
 		private configService: ConfigService
 	) {}
 
-	generateToken(user: any) {
-		const payload = { id: user.id, roles: user.roles.map(role => role.value) } // make dto
+	generateToken(user: GenerateTokenDto) {
+		const payload = { id: user.id, roles: user.roles.map(role => role.value) }
 		return {
 			accessToken: this.jwtService.sign(payload, {
 				secret: this.configService.get('ACCESS_SECRET_KEY'),
@@ -32,7 +33,7 @@ export class TokenService {
 		if (tokenData) {
 			return await this.prismaService.token.update({
 				where: { userId: tokenData.userId },
-				data: { ...tokenData, refreshToken: dto.refreshToken }
+				data: { refreshToken: dto.refreshToken }
 			})
 		}
 

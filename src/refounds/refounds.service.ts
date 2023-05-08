@@ -11,6 +11,9 @@ export class RefoundsService {
 	}
 
 	async getByUserId(userId: string) {
-		return await this.prismaService.refound.findMany({ where: { userId } })
+		return await this.prismaService.refound.findMany({
+			where: { userId },
+			select: { device: true, count: true, deviceId: true, userId: true, id: true }
+		})
 	}
 }

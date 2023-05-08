@@ -57,7 +57,7 @@ export class AuthService {
 		}
 
 		const userData = this.tokenService.validateRefreshToken(refreshToken)
-		const tokenFromDb = this.tokenService.findRefreshToken(refreshToken)
+		const tokenFromDb = await this.tokenService.findRefreshToken(refreshToken)
 
 		if (!userData || !tokenFromDb) {
 			throw new UnauthorizedException(UNAUTHORIZED)
