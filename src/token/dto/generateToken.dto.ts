@@ -1,10 +1,9 @@
 import { TypeValidation } from '@/common/constants/validation'
 import { IsString } from 'class-validator'
 
-export class SaveTokenDto {
+export class GenerateTokenDto {
 	@IsString({ message: TypeValidation.IS_STRING })
-	readonly userId: string
+	readonly id: string
 
-	@IsString({ message: TypeValidation.IS_STRING })
-	readonly refreshToken: string
+	readonly roles: { value: string }[]
 }

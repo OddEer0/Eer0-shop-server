@@ -4,7 +4,7 @@ import { AuthLoginDto } from './dto/authLogin.dto'
 import { Response } from 'express'
 import { Request } from 'express'
 import { ITokens } from '@/common/types/ITokens'
-import { ACCESS_TOKEN_TIME, REFRESH_TOKEN_TIME } from './auth.const'
+import { TOKEN_TIME } from './auth.const'
 import { AuthRegistrationDto } from './dto/authRegistration.dto'
 
 @Controller('auth')
@@ -42,8 +42,8 @@ export class AuthController {
 	}
 
 	setTokens(res: Response, tokens: ITokens) {
-		res.cookie('refreshToken', tokens.refreshToken, { maxAge: REFRESH_TOKEN_TIME, httpOnly: true })
-		res.cookie('accessToken', tokens.accessToken, { maxAge: ACCESS_TOKEN_TIME, httpOnly: true })
+		res.cookie('refreshToken', tokens.refreshToken, { maxAge: TOKEN_TIME, httpOnly: true })
+		res.cookie('accessToken', tokens.accessToken, { maxAge: TOKEN_TIME, httpOnly: true })
 	}
 
 	deleteTokens(res: Response) {

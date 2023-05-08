@@ -1,6 +1,6 @@
 import { GetUser } from '@/common/decorators/user.decorator'
 import { JwtAuthGuard } from '@/common/guards/jwtAuthGuard.guard'
-import { Controller, Get, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { User } from '@prisma/client'
 import { PurchaseDeviceService } from './purchase-device.service'
 
@@ -8,9 +8,15 @@ import { PurchaseDeviceService } from './purchase-device.service'
 export class PurchaseDeviceController {
 	constructor(private purchaseDeviceService: PurchaseDeviceService) {}
 
-	@Get(':id')
+	@Get()
 	@UseGuards(JwtAuthGuard)
 	getPurchaseDeviceByUserId(@GetUser() user: User) {
 		return this.purchaseDeviceService.getByUserId(user.id)
+	}
+
+	@Post('refound/:id')
+	@UseGuards(JwtAuthGuard)
+	refoundDevice(@GetUser() user: User, @Param('id') id: string) {
+		return this.purchaseDeviceService.refound(id, user.id)
 	}
 }
