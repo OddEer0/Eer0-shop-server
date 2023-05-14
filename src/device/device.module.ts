@@ -7,11 +7,12 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 import { UsersModule } from 'src/users/users.module'
 import { DeviceController } from './device.controller'
 import { DeviceService } from './device.service'
+import { FilesModule } from 'src/files/files.module'
 
 @Module({
 	controllers: [DeviceController],
 	providers: [DeviceService],
-	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule, UsersModule, BookingDeviceModule],
+	imports: [PrismaModule, BrandModule, CategoryModule, InfoModule, UsersModule, BookingDeviceModule, FilesModule],
 	exports: [DeviceService]
 })
 export class DeviceModule {}

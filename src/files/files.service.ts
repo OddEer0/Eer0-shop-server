@@ -25,6 +25,17 @@ export class FilesService {
 		}
 	}
 
+	async createManyFile(files: Express.Multer.File[]) {
+		const result = []
+
+		for await (let file of files) {
+			const fileName = await this.createFile(file)
+			result.push(fileName)
+		}
+
+		return result
+	}
+
 	async deleteFile(fileName: string) {
 		try {
 			const filePath = path.resolve(__dirname, '..', 'static')
@@ -36,7 +47,7 @@ export class FilesService {
 
 	async convertImageToWebP(imgBuffer: Buffer) {
 		try {
-			return await sharp(imgBuffer).webp().toBuffer()
+			return await sharp(imgBuffer).webp({ quality: 100 }).toBuffer()
 		} catch (error) {
 			throw new HttpException(
 				'Произошла ошибка при конвертирований картинки в WebP формат',

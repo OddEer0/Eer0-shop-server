@@ -7,7 +7,4 @@ export class CreateCategoryDto {
 
 	@IsString({ message: TypeValidation.IS_STRING })
 	readonly title: string
-
-	@IsString({ message: TypeValidation.IS_STRING })
-	readonly img: string
 }

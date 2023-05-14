@@ -3,18 +3,26 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { CreateCategoryDto } from './dto/createCategory.dto'
 import { UpdateCategoryDto } from './dto/updateCategory.dto'
 import { CATEGORY_EXISTS, CATEGORY_NOT_FOUND } from './category.const'
+import { FilesService } from 'src/files/files.service'
 
 @Injectable()
 export class CategoryService {
-	constructor(private prismaService: PrismaService) {}
+	constructor(private prismaService: PrismaService, private fileService: FilesService) {}
 
-	async create(dto: CreateCategoryDto) {
+	async create(dto: CreateCategoryDto, image: Express.Multer.File) {
 		const candidate = await this.prismaService.category.findUnique({ where: { name: dto.name } })
 		if (candidate) {
 			throw new BadRequestException(CATEGORY_EXISTS)
 		}
+		const fileName = await this.fileService.createFile(image)
 
-		return await this.prismaService.category.create({ data: dto })
+		return await this.prismaService.category.create({ data: { ...dto, img: fileName } })
+	}
+
+	async delete(id: string) {
+		await this.prismaService.filter.deleteMany({ where: { categoryId: id } })
+		await this.prismaService.category.delete({ where: { id } })
+		return 'Категория удалена'
 	}
 
 	async getAll() {

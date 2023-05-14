@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model HomeSlider {
+  id    String @id() @default(uuid())
+  title String
+  href  String?
+  image String
+}
+
 model User {
   id             String     @id() @default(uuid())
   email          String     @unique
