@@ -10,6 +10,7 @@ import { CATEGORY_NOT_FOUND } from 'src/category/category.const'
 import { BuyDeviceDto, BuyManyDeviceDto } from './dto/buyDevice.dto'
 import { UsersService } from 'src/users/users.service'
 import { BookingDeviceService } from 'src/booking-device/booking-device.service'
+import { FilesService } from 'src/files/files.service'
 
 @Injectable()
 export class DeviceService {
@@ -19,10 +20,11 @@ export class DeviceService {
 		private categoryService: CategoryService,
 		private infoService: InfoService,
 		private userService: UsersService,
-		private bookingDeviceService: BookingDeviceService
+		private bookingDeviceService: BookingDeviceService,
+		private fileService: FilesService
 	) {}
 
-	async create(dto: CreateDeviceDto) {
+	async create(dto: CreateDeviceDto, images: Express.Multer.File[]) {
 		const candidate = await this.prismaService.device.findUnique({ where: { name: dto.name } })
 
 		if (candidate) {
@@ -38,6 +40,8 @@ export class DeviceService {
 
 		await this.categoryService.addBrandToCategory(category.id, brand.id)
 
+		const filesName = await this.fileService.createManyFile(images)
+
 		const connect = []
 
 		for await (const info of dto.infos) {
@@ -48,6 +52,7 @@ export class DeviceService {
 		const device = await this.prismaService.device.create({
 			data: {
 				...dto,
+				images: filesName,
 				infos: {
 					connect: connect
 				}
@@ -67,7 +72,16 @@ export class DeviceService {
 		}
 	}
 
+	async getAll(args: Prisma.DeviceFindManyArgs) {
+		return await this.prismaService.device.findMany(args)
+	}
+
 	async deleteOne(id: string) {
+		await this.prismaService.cartDevice.deleteMany({ where: { deviceId: id } })
+		await this.prismaService.refound.deleteMany({ where: { deviceId: id } })
+		await this.prismaService.bookingsDevice.deleteMany({ where: { deviceId: id } })
+		await this.prismaService.purchaseDevice.deleteMany({ where: { deviceId: id } })
+		await this.prismaService.comment.deleteMany({ where: { deviceId: id } })
 		await this.prismaService.device.delete({ where: { id } })
 		return 'Девайс с ' + id + 'удалён'
 	}

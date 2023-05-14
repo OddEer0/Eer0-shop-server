@@ -19,6 +19,7 @@ import { GlobalJwtModule } from './common/modules/globalJwt.module'
 import { PurchaseDeviceModule } from './purchase-device/purchase-device.module';
 import { BookingDeviceModule } from './booking-device/booking-device.module';
 import { RefoundsModule } from './refounds/refounds.module';
+import { HomeSliderModule } from './home-slider/home-slider.module';
 
 @Module({
 	imports: [
@@ -42,7 +43,8 @@ import { RefoundsModule } from './refounds/refounds.module';
 		FilesModule,
 		PurchaseDeviceModule,
 		BookingDeviceModule,
-		RefoundsModule
+		RefoundsModule,
+		HomeSliderModule
 	]
 })
 export class AppModule {}
