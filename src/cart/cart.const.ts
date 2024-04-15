@@ -1,0 +1,5 @@
+export const COUNT_GREATEST_DEVICE = 'Количество превышает наличие товара'
+export const COUNT_LESS_DEVICE = 'Количество не может быть ниже 1го'
+export const CART_NOT_FOUND = 'Корзина не найдена'
+export const CART_DEVICE_EXISTS = 'Данный девайс уже добавлен в корзину'
+export const CART_DEVICE_NOT_FOUND = 'Девайс в корзине не найден'

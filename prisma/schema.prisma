@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model HomeSlider {
+  id    String @id() @default(uuid())
+  title String
+  href  String?
+  image String
+}
+
+model User {
+  id             String     @id() @default(uuid())
+  email          String     @unique
+  nickname       String     @unique
+  avatar         String?
+  password       String
+  firstName      String
+  lastName       String
+  subTitle       String?   
+  birthday       DateTime?
+  activationLink String
+  isActivate     Boolean    @default(false)
+  isBanned       Boolean    @default(false)
+  banReason      String?
+  cart           CartDevice[]
+  purchases      PurchaseDevice[]
+  bookings       BookingsDevice[]
+  refounds       Refound[]
+  addRates       Device[]
+  comments       Comment[]
+  roles          Role[]
+  token          Token?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model CartDevice {
+  id           String @id() @default(uuid())
+  count        Int
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device @relation(fields: [deviceId], references: [id])
+  deviceId     String
+}
+
+model PurchaseDevice {
+  id           String @id() @default(uuid())
+  count        Int
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device @relation(fields: [deviceId], references: [id])
+  deviceId     String
+  createdAt    DateTime @default(now())
+}
+
+model BookingsDevice {
+  id           String   @id() @default(uuid())
+  count        Int
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device   @relation(fields: [deviceId], references: [id])
+  deviceId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Refound {
+  id           String   @id() @default(uuid())
+  count        Int
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String  
+  device       Device   @relation(fields: [deviceId], references: [id])
+  deviceId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Role {
+  id          String @id() @default(uuid())
+  value       String @unique
+  description String
+  users       User[]
+}
+
+model Token {
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String  @id
+  refreshToken String? @unique
+}
+
+model Device {
+  id           String    @id() @default(uuid())
+  name         String    @unique
+  description  String
+  price        Int
+  stock        Int
+  stockPercent Int
+  count        Int
+  rate         User[]
+  images       String[]
+  carts        CartDevice[]
+  purchases    PurchaseDevice[]
+  bookings     BookingsDevice[]
+  refounds     Refound[]
+  comment      Comment[]
+  brand        Brand     @relation(fields: [brandId], references: [id])
+  brandId      String  
+  category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  infos        Info[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Brand {
+  id         String     @id() @default(uuid())
+  name       String     @unique
+  device     Device[]
+  categories Category[]
+}
+
+model Category {
+  id      String   @id() @default(uuid())
+  name    String   @unique
+  img     String
+  title   String
+  devices Device[]
+  filters Filter[]
+  brands  Brand[]
+}
+
+model Info {
+  id       String   @id() @default(uuid())
+  devices  Device[]
+  name     String
+  title    String
+  value    String
+  filter   Filter   @relation(fields: [filterId], references: [id])
+  filterId String
+}
+
+model Comment {
+  id          String   @id() @default(uuid())
+  device      Device   @relation(fields: [deviceId], references: [id])
+  deviceId    String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  description String
+  like        Int      @default(0)
+  dislike     Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Filter {
+  id         String   @id() @default(uuid())
+  name       String
+  type       String
+  title      String
+  maxValue   Int?
+  minValue   Int?
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  infos      Info[]
+}
